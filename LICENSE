@@ -1,0 +1,31 @@
+GRIP-EMS Plugin API — License
+
+The DOCUMENTATION TEXT in this repository (the prose in README.md, the pages
+under docs/, and the wiki) is Copyright (c) 2026 Sataana (MrSataana /
+JesperLive). All rights reserved.
+
+The EXAMPLE AND SNIPPET CODE in this repository (the Lua code blocks in the
+documentation and any files under examples/) is released under the MIT License
+printed below, so you may copy it into your own plugins freely.
+
+-------------------------------------------------------------------------------
+MIT License (applies to the example code only)
+
+Copyright (c) 2026 Sataana (MrSataana / JesperLive)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of the example code in this repository (the "Code"), to deal in the Code
+without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Code, and to permit persons to whom the Code is furnished to do so, subject
+to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Code.
+
+THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.

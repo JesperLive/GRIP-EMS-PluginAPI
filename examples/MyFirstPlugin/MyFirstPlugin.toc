@@ -1,0 +1,8 @@
+## Interface: 120007
+## Title: My First EMS Plugin
+## Notes: Example plugin for the GRIP-EMS Plugin API.
+## Author: You
+## Version: 1.0.0
+## Dependencies: GRIP-EMS
+
+MyFirstPlugin.lua

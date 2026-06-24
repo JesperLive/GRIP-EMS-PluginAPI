@@ -1,0 +1,73 @@
+site_name: GRIP-EMS Plugin API
+site_description: Developer documentation for writing plugins against the GRIP - Enhanced Macro Sequencer public API.
+site_author: Sataana (MrSataana / JesperLive)
+repo_url: https://github.com/JesperLive/GRIP-EMS-PluginAPI
+repo_name: JesperLive/GRIP-EMS-PluginAPI
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: black
+    accent: green
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/JesperLive
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Concepts:
+      - Security model: concepts/security-model.md
+  - API reference:
+      - Overview: api/index.md
+      - Tier 0 - Discovery: api/discovery.md
+      - Tier 1 - Events: api/events.md
+      - Tier 2 - Data: api/data.md
+      - Tier 3 - UI and layout: api/ui-layout.md
+      - Tier 3 - Preview: api/preview.md
+      - Tier 4 - Registries: api/registries.md
+      - Tier 5 - Theme: api/theme.md
+  - Guides:
+      - Your first plugin: guides/first-plugin.md
+      - Variable provider: guides/variable-provider.md
+      - Custom condition: guides/condition.md
+      - Custom step function: guides/step-function.md
+      - Layout provider: guides/layout-provider.md
+  - Reference:
+      - Event catalog: reference/event-catalog.md
+      - The lock list: reference/lock-list.md
+  - FAQ: faq.md
