@@ -6,9 +6,11 @@ The API has one job beyond being useful: let you extend EMS without letting you 
 
 Every WoW addon runs in the same Lua state. There's no process boundary, no real sandbox. A determined addon can hook globals, wrap functions, and read or taint frames no matter what any other addon does. So "plugins can't change how EMS works" is not enforced by a wall — it's enforced by **design**. EMS doesn't hand you a wall; it hands you a surface that never had a write path into the parts that matter.
 
-Four properties do the work:
+Five properties do the work:
 
-**Additive-only.** Every public method either reads state or registers a contribution that EMS validates and owns. No call mutates rotation execution, key binding, authorship, transmission, or saved data. There is no public setter that reaches those systems.
+**Additive, or owned and reversible.** Every public method either reads state, registers a contribution EMS validates and owns, or makes an owner-scoped write through a plugin handle — a sequence the plugin owns, one of its own setting overrides, a CVar profile request. A plugin never writes a user's object or another plugin's, never mutates rotation execution, key binding, authorship, transmission, or raw saved data, and EMS validates and journals every owned write. There's no public setter that reaches the locked systems.
+
+**Reversible.** Everything a plugin contributes through its handle is recorded in a per-plugin teardown journal. Disabling the plugin replays the journal and returns EMS to its default-installed state — registries cleared, owned sequences removed, settings and CVars restored, the layout back to classic. A plugin can overhaul the UI, and the user undoes the whole thing by turning the plugin off. See [reversibility](reversibility.md).
 
 **Frozen surface.** `GRIPEMS.API` and its sub-tables (`API.UI`, `API.Preview`) are read-only proxies. Assigning to them throws an error, and their metatables are locked, so you can't monkeypatch the API or swap a method out from under EMS. You call methods; you don't rewrite them.
 

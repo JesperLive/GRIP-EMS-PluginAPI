@@ -71,13 +71,33 @@ end
 
 That's a complete plugin. It declares the dependency, checks the version, waits for login, subscribes to an event, and reads state through a Tier 2 accessor. Nothing it does can change how EMS runs.
 
-## 5. Where to go next
+## 5. Going further: the plugin handle
 
+The plugin above only listens and reads, so the bare `GRIPEMS.API` is all it needs. The moment your plugin *contributes* something — a variable provider, a custom layout, its own sequences — register it first and work through the handle you get back:
+
+```lua
+local handle = API:RegisterPlugin("my_plugin", {
+    name = "My EMS Plugin",
+    version = "1.0.0",
+    OnEnable = function(h)
+        -- register providers, mount panels, author sequences here
+    end,
+    OnDisable = function(h) end,
+})
+```
+
+Everything you do through the handle is owned by your plugin and undone when the user disables it, so EMS returns to stock with no leftovers. That reversal needs `API_VERSION` 2 — gate on `RequireVersion(2)` if you use it. See [Plugins and the handle](api/plugins.md).
+
+## 6. Where to go next
+
+- [Plugins and the handle](api/plugins.md) — register a plugin and own what you build.
+- [Reversibility](concepts/reversibility.md) — why disabling a plugin returns EMS to stock.
 - [Security model](concepts/security-model.md) — the boundary you're working inside, and why it exists.
 - [Tier 1 - Events](api/events.md) and the [event catalog](reference/event-catalog.md) — everything you can subscribe to.
 - [Tier 2 - Data](api/data.md) — the read-only accessors.
-- [Tier 3 - UI and layout](api/ui-layout.md) — replace the window layout with your own.
+- [Tier 3 - UI and layout](api/ui-layout.md) — mount EMS's panels into a layout of your own.
 - [Tier 4 - Registries](api/registries.md) — add variables, conditions, and step functions.
+- [Tier 5 - Authoring](api/authoring.md) — author owned sequences, settings, and CVar profiles.
 
 ## A note on failure
 

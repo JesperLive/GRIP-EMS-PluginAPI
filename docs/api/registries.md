@@ -4,6 +4,9 @@ These let your plugin add *content* of kinds EMS already understands — variabl
 
 A pattern runs through all four: you register a spec table whose `id` field must equal the id you register under, a duplicate id is rejected rather than overwritten, and your callbacks run isolated. Registration returns `true`, or `false` plus a reason.
 
+!!! tip "Register through the handle to make it reversible"
+    The `GRIPEMS.API:Register*` forms on this page are anonymous — EMS validates and stores them, but they aren't tied to a plugin, so they stay put if the plugin is later disabled. If your plugin uses [`RegisterPlugin`](plugins.md), call the matching handle method instead (`handle:RegisterVariableProvider(spec)`, `handle:RegisterCondition(spec)`, and so on). It takes the same spec — minus the separate `id` argument, since the handle reads `spec.id` — registers it the same way, and journals it so disabling the plugin removes it. See [reversibility](../concepts/reversibility.md).
+
 ## `API:RegisterVariableProvider(id, spec)`
 
 A variable provider is a read-only value source for the `~name~` variable system. When EMS resolves a variable, it checks the user's own variables first, then gear variables, and only then asks the registered providers — so a plugin can never shadow a user's variable. Providers are consulted in registration order, and the first one to return a usable scalar wins.
@@ -113,6 +116,8 @@ API:RegisterSequences("Acme Rotations", "1.0.0",
 | `seqTable` | table | the sequences, keyed by name |
 
 EMS validates the inputs, namespaces them under your plugin, loads them into the engine, and fires `PLUGIN_REGISTERED`. A user's own sequence wins on a name clash, so you can't clobber their work. The per-sequence table follows EMS's own sequence format; the simplest path is to build a sequence in EMS, export it, and ship that shape.
+
+`RegisterSequences` ships a static set. To create, edit, or delete a sequence at runtime — and have it removed when your plugin is disabled — use the handle's authoring methods instead; see [Tier 5 - Authoring](authoring.md).
 
 ## Detecting a tier before you use it
 

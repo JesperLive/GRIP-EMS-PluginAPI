@@ -12,14 +12,17 @@ Yes. Plugins extend EMS; they don't run without it. The hard dependency means Wo
 **My variable provider returns nothing. Why?**
 Two common causes. Either you returned something that isn't a plain scalar (a table or function), or you returned a 12.0 secret-tagged value — a player's health, for instance, looks like a number but is secret. EMS screens both out so nothing taint-sensitive reaches macrotext. Return a non-secret string, number, or boolean. Turn on EMS debug to see the rejection log.
 
-**Why can't I subscribe to context or keybind changes?**
-Those events aren't on the public bus — only the names in the [event catalog](reference/event-catalog.md) are. For content context, read it with `GetCurrentContext()`. If you need an internal signal exposed publicly, open an issue.
+**Can I subscribe to context, keybind, or loadout changes?**
+Yes — `CONTEXT_CHANGED`, `KEYBIND_CHANGED`, and `LOADOUT_CHANGED` are public as of v2, alongside `SEQUENCE_UPDATED`. They fire from the engine on a real change; the [event catalog](reference/event-catalog.md) lists each payload. `KEYBIND_CHANGED` can arrive with `nil` arguments on a bulk or clear change, so guard for that. You can still read the context on demand with `GetCurrentContext()` if you'd rather poll.
 
-**Three UI events never fire for me.**
-`GEMS_UI_NAV_CHANGED`, `GEMS_EDITOR_TAB_CHANGED`, and `GEMS_SEQUENCE_SELECTED` are reserved — accepted by `On`, but the stock UI doesn't emit them yet. They're there for a layout provider to fire. Subscribing is safe and forward-compatible; just don't wait on them under the default UI.
+**Do the UI nav events fire?**
+Yes, as of v2. `GEMS_EDITOR_TAB_CHANGED` fires when the editor switches sub-tabs and `GEMS_SEQUENCE_SELECTED` when a sequence is selected, both under the stock UI. `GEMS_UI_NAV_CHANGED` fires from `SetActiveView`, so you'll see it once a layout provider drives its own nav — classic has no nav region to change.
 
 **Can I change how a rotation executes, or how a key binds?**
 No. Those are on the [lock list](reference/lock-list.md) and have no public write path. You can read derived state (the active version, the context, a sequence summary) and react to events, but you can't reach into execution, binding, identity, transmission, secure CVars, or persistence.
+
+**What happens when a user disables my plugin?**
+EMS reverts everything you registered or authored through your handle and returns to its default-installed state — registry entries removed, owned sequences gone, any setting or CVar override restored, the layout back to classic. Then your `OnDisable` runs for cleanup EMS can't do. This is the v2 reversibility guarantee, and it's why you register through `RegisterPlugin` and work through the handle. See [reversibility](concepts/reversibility.md).
 
 **My layout provider doesn't take over when the window first opens.**
 EMS resolves the active provider when it builds the window — the first time the user opens it. Register at `PLAYER_LOGIN` and persist the user's opt-in with `SetActiveLayoutProvider` (it writes the `uiLayout` setting), so the next build resolves your provider. If you register after the window's already built, apply on the next `GEMS_UI_LAYOUT_APPLY` or wait for `/reload`. See the [layout guide](guides/layout-provider.md).

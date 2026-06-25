@@ -30,7 +30,7 @@ if info then
 end
 ```
 
-Returns a metadata snapshot for one sequence, or `nil` when no sequence by that name is active. Every field is a scalar copied out of the sequence data:
+Returns a metadata snapshot for one sequence, or `nil` when no sequence by that name is active. Every field is a scalar or a fresh copy, so nothing you get back aliases stored data:
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -40,9 +40,20 @@ Returns a metadata snapshot for one sequence, or `nil` when no sequence by that 
 | `defaultVersion` | number \| nil | the default version index |
 | `activeVersionIndex` | number \| nil | version resolved under the current context |
 | `activeStepCount` | number | steps in the active version |
+| `contextVersionCount` | number | versions tracked for context resolution |
 | `classID` | number \| nil | class the sequence is tagged to, if any |
+| `specID` | number \| nil | spec the sequence is tagged to, if any |
+| `author` | string \| nil | the sequence's author, if set |
+| `description` | string \| nil | the sequence's description, if set |
+| `privacyMode` | string \| nil | the privacy mode stamped on the sequence |
+| `version` | number \| nil | the sequence's stored version number |
+| `createdAt` | number \| nil | creation timestamp |
+| `updatedAt` | number \| nil | last-modified timestamp |
+| `disabled` | boolean | whether the sequence is disabled |
+| `keybind` | string \| nil | the key bound to the sequence, or `nil` if unbound |
+| `variableDeps` | table | fresh sorted array of variable names the sequence depends on |
 
-There's no separate "active version" accessor — `activeVersionIndex` already carries the index the current context resolves to.
+There's no separate "active version" accessor — `activeVersionIndex` already carries the index the current context resolves to. The richer fields (`author`, `description`, `keybind`, `variableDeps`, and the timestamps) are what a metadata or about panel reads; v1 returned only the first seven.
 
 ## `API:GetCurrentContext()`
 

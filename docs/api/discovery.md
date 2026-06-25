@@ -4,13 +4,13 @@ The handshake. Call these before anything else so your plugin fails clearly agai
 
 ## `API.API_VERSION`
 
-An integer. The contract version of the API surface. It's bumped only when a change would break existing plugins — adding a method does not bump it. Compare against it through `RequireVersion` rather than reading it directly.
+An integer, the contract version of the API surface. It goes up when the surface gains a level worth gating on — v2 added the plugin handle, reversibility, panel mounting, views, and the authoring tier. A v1 plugin keeps working unchanged on a v2 build; the bump is what lets a v2 plugin detect the new surface. Compare against it through `RequireVersion` rather than reading it directly.
 
-Current value: `1`.
+Current value: `2`.
 
 ## `API.EMS_VERSION`
 
-A string, the running EMS version (for example `"2.1.29"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release.
+A string, the running EMS version (for example `"2.2.0"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release.
 
 ## `API:RequireVersion(n)`
 
@@ -21,9 +21,9 @@ local ok, reason = API:RequireVersion(1)
 Returns `true` when the running `API_VERSION` is at least `n`. Otherwise returns `false` and a reason string naming the running and required versions. Pass the lowest `API_VERSION` that has the features you depend on.
 
 ```lua
--- A plugin that needs a hypothetical v2 feature:
+-- A plugin that needs the v2 authoring surface (the handle, owned writes):
 if not API:RequireVersion(2) then
-    return  -- this EMS is v1; bail out quietly
+    return  -- this EMS predates v2; bail out quietly
 end
 ```
 
@@ -62,3 +62,25 @@ The capability ids in this build:
 | `variables` | 4 | `RegisterVariableProvider` |
 | `conditions` | 4 | `RegisterCondition` / `EvaluateCondition` |
 | `stepfunctions` | 4 | `RegisterStepFunction` |
+| `plugins` | 0 | `RegisterPlugin` and the handle |
+| `panels` | 3 | `MountPanel` |
+| `views` | 3 | `RegisterView` / `SetActiveView` |
+| `settings` | 5 | `RegisterSetting` / `OverrideSetting` |
+| `cvars` | 5 | `RequestCVarProfile` |
+| `authoring` | 5 | owned sequences, settings, and CVar profiles |
+
+The order in the array follows the source: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `conditions`, `stepfunctions`, `plugins`, `authoring`, `panels`, `views`, `settings`, `cvars`. Don't depend on the order — check for the id you want.
+
+## `API:RegisterPlugin(id, meta)`
+
+The handshake ends here. Once the version checks out, register your plugin and take its handle — the table that owns everything your plugin contributes and the entry to most of the v2 surface.
+
+```lua
+local handle, reason = API:RegisterPlugin("acme_overhaul", {
+    name = "Acme Overhaul",
+    version = "1.0.0",
+    OnEnable = function(h) MyPlugin_Build(h) end,
+})
+```
+
+It has its own page, because the handle is where the rest of the API hangs off: [Plugins and the handle](plugins.md).

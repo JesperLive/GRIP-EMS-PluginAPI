@@ -1,6 +1,6 @@
 # Guide: a layout provider
 
-This is the big one — replacing the EMS window layout with your own. EMS gives you seven empty host frames on the main window and a slot to register a provider that positions content into them. The built-in "classic" provider draws the default two-panel window; yours can draw whatever you want.
+This is the big one — replacing the EMS window with a layout of your own. EMS gives you seven empty host frames on the main window and a slot to register a provider that positions them. A provider alone just gets you empty frames, though: a real reskin also pulls EMS's built-in panels (the sequence list, the editor) into your hosts, hides the classic chrome, and drives its own nav. The built-in "classic" provider draws the default two-panel window and never goes away, so the user can always switch back.
 
 Read the [Tier 3 - UI and layout](../api/ui-layout.md) reference alongside this; the guide is the walkthrough, the reference is the contract.
 
@@ -43,6 +43,31 @@ end,
 ```
 
 The host names and their intended roles are in the [reference](../api/ui-layout.md#host-frames): `navHost`, `listHost`, `metadataHost`, `editorHost`, `configHost`, `globalViewHost`, `iconFooterHost`.
+
+## Pull in EMS's panels
+
+Your own widgets are half of it. The other half is EMS's real content — the sequence list, the editor, the variables and conditions panels. `MountPanel` reparents a built-in panel into one of your hosts so you don't rebuild it:
+
+```lua
+OnInitPanels = function(mainFrame, hosts)
+    local API = GRIPEMS.API
+    API.UI:SetClassicChrome(false)                      -- hide the two-panel chrome
+    API.UI:MountPanel("sequenceList", hosts.listHost)   -- EMS's list, in your host
+    API.UI:MountPanel("editor", hosts.editorHost)       -- EMS's editor, in your host
+end,
+```
+
+`SetClassicChrome(false)` hides the classic left panel, divider, right panel, and title bar so yours shows instead. `MountPanel` takes a content panel id — `sequenceList`, `editor`, `variables`, `conditions`, `macros`, or `source` — and pins it to fill the host. The dialog panels (`options`, `import`, `export`, `about`) open their own window; `preview` goes through the [Preview facade](../api/preview.md); `vehiclePet` and `metadata` are reserved. The full list and rules are in the [reference](../api/ui-layout.md#mount-a-built-in-panel).
+
+For named screens and a nav rail, register views and switch between them:
+
+```lua
+API.UI:RegisterView("sequences", { id = "sequences", name = "Sequences" })
+API.UI:RegisterView("editor", { id = "editor", name = "Editor" })
+API.UI:SetActiveView("sequences")   -- fires GEMS_UI_NAV_CHANGED
+```
+
+All of it is reversible. When the user disables your plugin, EMS un-mounts the panels back where they were, shows the classic chrome again, and drops your views — see [reversibility](../concepts/reversibility.md).
 
 ## The one hard safety rule
 

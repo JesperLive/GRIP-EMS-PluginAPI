@@ -52,14 +52,17 @@ nav:
   - Getting started: getting-started.md
   - Concepts:
       - Security model: concepts/security-model.md
+      - Reversibility: concepts/reversibility.md
   - API reference:
       - Overview: api/index.md
       - Tier 0 - Discovery: api/discovery.md
+      - Plugins and the handle: api/plugins.md
       - Tier 1 - Events: api/events.md
       - Tier 2 - Data: api/data.md
       - Tier 3 - UI and layout: api/ui-layout.md
       - Tier 3 - Preview: api/preview.md
       - Tier 4 - Registries: api/registries.md
+      - Tier 5 - Authoring: api/authoring.md
       - Tier 5 - Theme: api/theme.md
   - Guides:
       - Your first plugin: guides/first-plugin.md

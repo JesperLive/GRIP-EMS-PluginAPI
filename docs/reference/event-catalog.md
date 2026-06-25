@@ -2,7 +2,7 @@
 
 These are the events you can subscribe to with [`API:On`](../api/events.md). `On` rejects any name not on this list. Your handler receives the payload arguments shown — the event name is not passed — and any table argument is a deep-copied, read-only snapshot.
 
-The **Fires** column matters: most events are emitted by EMS today; three UI events are part of the contract and accepted by `On`, but the in-core classic UI does not emit them yet. They're reserved for a layout provider or a later EMS UI to fire. Subscribing to a reserved event is safe and forward-compatible — you just won't get callbacks from it under the stock UI.
+The **Fires** column tells you what emits today. Everything here fires from a real site in EMS, with one wrinkle: `GEMS_UI_NAV_CHANGED` only fires when a layout provider drives `SetActiveView`, since classic has no nav region of its own.
 
 ## Sequence and plugin lifecycle
 
@@ -18,6 +18,17 @@ The **Fires** column matters: most events are emitted by EMS today; three UI eve
 
 For `SEQUENCE_CREATED`, prefer [`GetSequenceInfo(name)`](../api/data.md) for documented per-field metadata rather than reading the raw `data` copy.
 
+## Core change signals
+
+These fire from the engine on a real change. They were internal in v1; v2 makes them public.
+
+| Event | Payload | Fires | Meaning |
+|---|---|---|---|
+| `SEQUENCE_UPDATED` | `(name, data)` | yes | a sequence was saved; `data` is a read-only copy of its table |
+| `KEYBIND_CHANGED` | `(seqName, key)` | yes | a sequence keybind changed; both args may be `nil` on a bulk or clear change |
+| `CONTEXT_CHANGED` | `(newContext, oldContext)` | yes | the detected content context changed |
+| `LOADOUT_CHANGED` | `(newID, newName, oldID, oldName)` | yes | the active talent loadout changed |
+
 ## UI and preview
 
 | Event | Payload | Fires | Meaning |
@@ -26,12 +37,12 @@ For `SEQUENCE_CREATED`, prefer [`GetSequenceInfo(name)`](../api/data.md) for doc
 | `GEMS_UI_LAYOUT_APPLY` | none | yes | a layout pass ran (after `OnApplyLayout`) |
 | `GEMS_PREVIEW_MODE_CHANGED` | `(mode)` | yes | preview mode changed to `"icons"`, `"text"`, or `"compiled"` |
 | `GEMS_PREVIEW_UPDATE` | none | yes | the preview re-rendered |
-| `GEMS_UI_NAV_CHANGED` | reserved | no | reserved for a provider to signal a nav change |
-| `GEMS_EDITOR_TAB_CHANGED` | reserved | no | reserved for a provider to signal an editor tab change |
-| `GEMS_SEQUENCE_SELECTED` | reserved | no | reserved for a provider to signal a selection change |
+| `GEMS_UI_NAV_CHANGED` | `(viewId)` | yes | fires from `SetActiveView`; only a layout provider driving its own nav emits it |
+| `GEMS_EDITOR_TAB_CHANGED` | `(tabName)` | yes | the editor switched sub-tabs |
+| `GEMS_SEQUENCE_SELECTED` | `(name)` | yes | a sequence was selected in the list |
 
 `GEMS_UI_READY` is the signal to do your UI setup — host frames don't exist before it.
 
 ## Not on the public bus
 
-EMS fires other events internally (context changes, keybind changes, loadout changes, and more), but they're not part of the public contract and `On` won't accept them. For content context, read it directly with [`GetCurrentContext()`](../api/data.md). If you need an internal signal exposed as a public event, [open an issue](https://github.com/JesperLive/GRIP-EMS-PluginAPI/issues) — that's how the catalog grows.
+EMS fires other events internally that aren't part of the public contract — `On` won't accept them. The catalog above is the full public set. If you need an internal signal exposed publicly, [open an issue](https://github.com/JesperLive/GRIP-EMS-PluginAPI/issues); the core change signals above were internal until they were added this way.

@@ -1,6 +1,6 @@
 # API reference
 
-Everything a plugin can call lives on `GRIPEMS.API` (alias `_G.GRIPEMS_API`), plus two frozen sub-tables, `GRIPEMS.API.UI` and `GRIPEMS.API.Preview`. This page is the map; each tier has its own page with full signatures and examples.
+Everything a plugin can call lives on `GRIPEMS.API` (alias `_G.GRIPEMS_API`), its two frozen sub-tables `GRIPEMS.API.UI` and `GRIPEMS.API.Preview`, and the per-plugin handle that `RegisterPlugin` hands back. This page is the map; each tier has its own page with full signatures and examples.
 
 ## Conventions
 
@@ -29,6 +29,9 @@ Read accessors return the value directly, or `nil` when there's nothing to retur
 | `API.EMS_VERSION` | running EMS version string |
 | `API:RequireVersion(n)` | `true`, or `false` + reason |
 | `API:GetCapabilities()` | fresh array of capability ids |
+| `API:RegisterPlugin(id, meta)` | frozen handle, or `nil` + reason |
+
+`RegisterPlugin` is the gateway to most of the v2 surface — it hands back a handle that owns everything your plugin contributes, so EMS can revert it on disable. See [Plugins and the handle](plugins.md).
 
 ### Tier 1 — Events ([details](events.md))
 
@@ -56,6 +59,11 @@ Read accessors return the value directly, or `nil` when there's nothing to retur
 | `API.UI:SetActiveLayoutProvider(id)` | `true`, or `false` + reason |
 | `API.UI:GetActiveLayoutProvider()` | provider id string |
 | `API.UI:GetHost(name)` | host frame, or `nil` |
+| `API.UI:MountPanel(panelId, host)` | `true`, or `false` + reason |
+| `API.UI:SetClassicChrome(enabled)` | `true`, or `false` + reason |
+| `API.UI:RegisterView(id, def)` | `true`, or `false` + reason |
+| `API.UI:SetActiveView(id)` | `true`, or `false` + reason |
+| `API.UI:GetActiveView()` | view id string, or `nil` |
 | `API.UI:RegisterPanelFrame(frame, category, class)` | nothing (Tier 5) |
 
 ### Tier 3 — Preview ([details](preview.md))
@@ -78,6 +86,21 @@ Read accessors return the value directly, or `nil` when there's nothing to retur
 | `API:RegisterCondition(id, spec)` | `true`, or `false` + reason |
 | `API:EvaluateCondition(id)` | clean boolean |
 | `API:RegisterStepFunction(id, spec)` | `true`, or `false` + reason |
+
+### Tier 5 — Authoring ([details](authoring.md))
+
+Owner-scoped writes on the [handle](plugins.md), every one reverted on disable.
+
+| Method | Returns |
+|---|---|
+| `handle:CreateSequence(name, data)` | `true`, or `false` + reason |
+| `handle:UpdateSequence(name, data)` | `true`, or `false` + reason |
+| `handle:DeleteSequence(name)` | `true`, or `false` + reason |
+| `handle:SelectSequence(name)` / `handle:OpenEditor(name)` | `true`, or `false` + reason |
+| `handle:RegisterSetting(def)` | `true`, or `false` + reason |
+| `handle:OverrideSetting(key, value)` / `handle:RevertSetting(key)` | `true`, or `false` + reason |
+| `handle:RequestCVarProfile(key)` / `handle:RevertCVarProfile()` | `true`, or `false` + reason |
+| `handle:RegisterImportProvider(spec)` / `handle:RegisterExportProvider(spec)` | `true`, or `false` + reason |
 
 ### Tier 5 — Theme ([details](theme.md))
 

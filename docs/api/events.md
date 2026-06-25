@@ -43,6 +43,10 @@ Returns a fresh array of the event names you may subscribe to — the same set d
 
 Subscribe from an init point (see [Getting started](../getting-started.md)), not at file scope. For UI events (`GEMS_*`), subscribe after `GEMS_UI_READY` fires, since the window and its host frames don't exist until the user first opens EMS.
 
-## A note on the UI events
+## Core change signals
 
-Three catalog entries — `GEMS_UI_NAV_CHANGED`, `GEMS_EDITOR_TAB_CHANGED`, and `GEMS_SEQUENCE_SELECTED` — are part of the contract and accepted by `On`, but the in-core classic UI does not emit them yet. They're reserved for a layout provider (or a later EMS UI) to fire. Subscribing to them is safe and forward-compatible; just don't expect callbacks from them under the stock UI today. The catalog marks which events fire now and which are reserved.
+EMS exposes the signals a plugin most often wants to watch: `SEQUENCE_UPDATED` when a sequence is saved, `KEYBIND_CHANGED` when a binding changes, `CONTEXT_CHANGED` when the content context shifts, and `LOADOUT_CHANGED` on a talent-loadout change. All four fire from the engine on a real change; v2 adds them to the public catalog. Their payloads are in the [catalog](../reference/event-catalog.md) — note `KEYBIND_CHANGED` can arrive with `nil` arguments on a bulk or clear change, so guard for that in your handler.
+
+## The UI nav events
+
+`GEMS_UI_NAV_CHANGED`, `GEMS_EDITOR_TAB_CHANGED`, and `GEMS_SEQUENCE_SELECTED` fire now — they were reserved in v1. `GEMS_EDITOR_TAB_CHANGED` fires when the editor switches sub-tabs and `GEMS_SEQUENCE_SELECTED` when a sequence is selected in the list, both under the stock UI. `GEMS_UI_NAV_CHANGED` fires from `SetActiveView`, so it's a layout provider driving its own nav that emits it — classic has no nav region. Subscribe to these after `GEMS_UI_READY`, since the window has to exist first.
