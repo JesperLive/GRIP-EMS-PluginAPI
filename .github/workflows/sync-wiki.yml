@@ -1,0 +1,43 @@
+name: Sync wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "wiki/**"
+      - ".github/workflows/sync-wiki.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# One sync at a time.
+concurrency:
+  group: sync-wiki
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mirror wiki/ into the GitHub wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          tmp="$(mktemp -d)"
+          git clone "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.wiki.git" "$tmp"
+          cp wiki/*.md "$tmp"/
+          cd "$tmp"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Wiki already up to date; nothing to sync."
+            exit 0
+          fi
+          git commit -m "Sync wiki from ${SHA}"
+          git push origin HEAD:master
