@@ -16,6 +16,7 @@ The **official documentation** lives on the docs site, which is built from the r
 
 - [FAQ](FAQ) — community questions and answers.
 - [Plugin Showcase](Plugin-Showcase) — plugins built on the API.
+- [AI-Assisted Plugins](AI-Assisted-Plugins) — using an AI assistant to build a plugin.
 - [Contributing](Contributing) — how to help with the wiki and the docs.
 
 If you find something in the wiki that contradicts the docs site, the docs site wins — and please fix the wiki page or flag it.

@@ -36,6 +36,10 @@ end)
 
 Everything a plugin registers or authors through its handle is reverted when the plugin is disabled — the reversibility page on the docs site covers it.
 
+## Building with an AI assistant
+
+An AI assistant writes correct plugins when it has the API in front of it. Paste the [AI context pack](https://JesperLive.github.io/GRIP-EMS-PluginAPI/reference/ai-context/) into the chat, then follow the [AI-assisted guide](https://JesperLive.github.io/GRIP-EMS-PluginAPI/guides/ai-assisted/) and check what it gives you against the pack.
+
 ## Versioning
 
 `GRIPEMS.API.API_VERSION` is an integer; it goes up when the surface gains a level worth gating on (v1 → v2 added the handle and the authoring tier). Call `GRIPEMS.API:RequireVersion(n)` in your init and bail out cleanly if it returns false.

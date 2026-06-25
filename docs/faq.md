@@ -35,3 +35,6 @@ Gate on `API_VERSION` through `RequireVersion(n)`, not on `EMS_VERSION`. `API_VE
 
 **Is the API stable?**
 Within an `API_VERSION`, yes — that's the contract. Adding methods doesn't bump the version; a breaking change does. Build against the public surface and EMS updates won't silently break you. Build against `_G.GRIPEMS` internals and they will.
+
+**Can I use an AI assistant to write a plugin?**
+Yes, and there's a [guide](guides/ai-assisted.md) for it. Paste the [AI context pack](reference/ai-context.md) into the chat first so the assistant works from the real API, then check every call it writes against that page before you load the result. Anything not on that page is invented. Models are good at the shape of a plugin and bad at remembering method names, so the pack plus a read-through is what gets you correct code.

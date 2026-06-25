@@ -70,7 +70,9 @@ nav:
       - Custom condition: guides/condition.md
       - Custom step function: guides/step-function.md
       - Layout provider: guides/layout-provider.md
+      - Building with an AI assistant: guides/ai-assisted.md
   - Reference:
       - Event catalog: reference/event-catalog.md
       - The lock list: reference/lock-list.md
+      - AI context pack: reference/ai-context.md
   - FAQ: faq.md
