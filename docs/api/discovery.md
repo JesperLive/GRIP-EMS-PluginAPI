@@ -4,9 +4,9 @@ The handshake. Call these before anything else so your plugin fails clearly agai
 
 ## `API.API_VERSION`
 
-An integer, the contract version of the API surface. It goes up when the surface gains a level worth gating on — v2 added the plugin handle, reversibility, panel mounting, views, and the authoring tier. A v1 plugin keeps working unchanged on a v2 build; the bump is what lets a v2 plugin detect the new surface. Compare against it through `RequireVersion` rather than reading it directly.
+An integer, the contract version of the API surface. It goes up when the surface gains a level worth gating on — v2 added the plugin handle, reversibility, panel mounting, views, and the authoring tier; v3 added the action-bar surface: per-step spell data, the sequence's own action-bar macro, and plugin `/gems` subcommands. A v1 plugin keeps working unchanged on a v3 build; the bump is what lets a newer plugin detect the surface it needs. Compare against it through `RequireVersion` rather than reading it directly.
 
-Current value: `2`.
+Current value: `3`.
 
 ## `API.EMS_VERSION`
 
@@ -68,8 +68,11 @@ The capability ids in this build:
 | `settings` | 5 | `RegisterSetting` / `OverrideSetting` |
 | `cvars` | 5 | `RequestCVarProfile` |
 | `authoring` | 5 | owned sequences, settings, and CVar profiles |
+| `stepdata` | 2 | `GetSequenceSteps` |
+| `macro` | 2 / 5 | `GetSequenceMacroIndex` and `handle:EnsureSequenceMacro` |
+| `slash` | 5 | `handle:RegisterSlashCommand` |
 
-The order in the array follows the source: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `conditions`, `stepfunctions`, `plugins`, `authoring`, `panels`, `views`, `settings`, `cvars`. Don't depend on the order — check for the id you want.
+The order in the array follows the source: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `conditions`, `stepfunctions`, `plugins`, `authoring`, `panels`, `views`, `settings`, `cvars`, `stepdata`, `macro`, `slash`. Don't depend on the order — check for the id you want.
 
 ## `API:RegisterPlugin(id, meta)`
 

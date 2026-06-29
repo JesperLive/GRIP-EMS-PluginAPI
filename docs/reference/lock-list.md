@@ -9,7 +9,7 @@ v2 added owner-scoped writes: a plugin can author its own sequences, override se
 | Locked area | Why it's locked |
 |---|---|
 | Rotation execution | Changing what fires, when, or in what order *is* changing how EMS works. The engine's activate, deactivate, step-advance, reset, recompile, and compile paths are internal. |
-| Secure buttons and the keybind matrix | These are taint-sensitive, and binding is EMS's core promise. The secure action buttons, override bindings, and the keybind manager have no plugin write path. |
+| Secure buttons and the keybind matrix | These are taint-sensitive, and binding is EMS's core promise. The secure action buttons, override bindings, and the keybind manager have no plugin write path. A plugin reads a sequence's keybind through `GetSequenceInfo` but can't set one — and since the 11.0.2 macro-chaining restriction stops a bar button from proxying into EMS's secure execution, the supported way to put a sequence on a bar is its [action-bar macro](../api/authoring.md#sequence-macros), not a keybind write. |
 | Authorship and signing | Sequences carry a signature chain so sharing stays honest. Letting a plugin write to identity or the modifier chain would break that integrity. |
 | Peer-to-peer transmission | The sharing protocol and its abuse surface stay internal. Plugins don't send on EMS's channels. |
 | Secure CVar application | A plugin requests a CVar *profile* through the manager, which applies it under combat/secure rules; it never writes a secure CVar directly. The raw secure-CVar write stays in EMS's hands. |

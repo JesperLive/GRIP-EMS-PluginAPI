@@ -55,6 +55,41 @@ Returns a metadata snapshot for one sequence, or `nil` when no sequence by that 
 
 There's no separate "active version" accessor — `activeVersionIndex` already carries the index the current context resolves to. The richer fields (`author`, `description`, `keybind`, `variableDeps`, and the timestamps) are what a metadata or about panel reads; v1 returned only the first seven.
 
+## `API:GetSequenceSteps(name)`
+
+```lua
+local steps = API:GetSequenceSteps("My Rotation")
+if steps then
+    for _, s in ipairs(steps) do
+        print(s.index, s.spellID, s.spellName, s.icon)
+    end
+end
+```
+
+Returns an array of the active version's steps, or `nil` when no sequence by that name is active. Each entry is a fresh table of public scalars — a spell's id, name, and icon are public data, never secret the way a unit's health is, so nothing here aliases engine state or carries a taint risk:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `index` | number | the step's position, 1-based |
+| `spellID` | number \| nil | the step's resolved spell id, or `nil` for a step that isn't a single spell |
+| `spellName` | string \| nil | the spell name, when one resolves |
+| `icon` | number \| nil | the spell's icon texture id, for a button face |
+
+This is the per-step view an action-bar plugin draws chrome from. Pair it with the `SEQUENCE_STEP_ADVANCED` event, which hands your handler `(seqName, step, numSteps)`, to know which entry is live, then call `C_Spell.GetSpellCooldown` yourself for the swipe and glow. EMS resolves the ids through the same path the engine compiles from, so they match what the sequence actually casts. The [action-bar plugin guide](../guides/action-bar-plugin.md) walks through the whole flow.
+
+## `API:GetSequenceMacroIndex(name)`
+
+```lua
+local index = API:GetSequenceMacroIndex("My Rotation")
+if index then
+    PickupMacro(index)  -- now drag it onto an action bar
+end
+```
+
+Returns the macro slot index of the sequence's action-bar macro, or `nil` when no macro exists for it yet. Read-only — it never creates anything. To make sure a macro exists first, use the authoring-tier [`handle:EnsureSequenceMacro`](authoring.md#sequence-macros), then read or pick up the index.
+
+A sequence's macro is a standard WoW macro EMS maintains, so it's draggable and `PickupMacro`-able with no taint. It's also capped at 255 characters and runs in the default environment, so it's a simplified stand-in for the sequence — enough for many rotations, but it doesn't carry the full engine the keybind runs.
+
 ## `API:GetCurrentContext()`
 
 ```lua
