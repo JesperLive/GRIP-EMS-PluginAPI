@@ -18,7 +18,7 @@ The [AI-assisted plugin guide](../guides/ai-assisted.md) has example prompts and
 
 EMS (GRIP - Enhanced Macro Sequencer) is a World of Warcraft Retail addon. A plugin is its own addon that extends EMS through one frozen table, `GRIPEMS.API` (global alias `_G.GRIPEMS_API`). You never edit EMS and never reach into `_G.GRIPEMS`. Everything a plugin contributes through its handle is reverted the moment the user disables it, so the addon returns to stock.
 
-API_VERSION: 2. Documented against GRIP-EMS 2.2.0 on WoW Retail 12.0.7.
+API_VERSION: 3. Documented against GRIP-EMS 2.3.0 on WoW Retail 12.0.7.
 
 ### Hard rules (follow every one)
 
@@ -64,15 +64,15 @@ end)
 
 ### Tier 0 - discovery
 
-- `GRIPEMS.API.API_VERSION` -> integer (2)
-- `GRIPEMS.API.EMS_VERSION` -> string ("2.2.0"); for logs only, don't gate features on it
+- `GRIPEMS.API.API_VERSION` -> integer (3)
+- `GRIPEMS.API.EMS_VERSION` -> string ("2.3.0"); for logs only, don't gate features on it
 - `GRIPEMS.API:RequireVersion(n)` -> true, or false + reason
 - `GRIPEMS.API:GetCapabilities()` -> array of capability id strings
 - `GRIPEMS.API:RegisterPlugin(id, meta)` -> handle, or nil + reason
     - `meta = { name = string, version = string, OnEnable = function(handle), OnDisable = function(handle) }`
     - `id` is your namespace for everything you contribute; a duplicate id is rejected, never overwritten.
 
-Capability ids: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `conditions`, `stepfunctions`, `plugins`, `authoring`, `panels`, `views`, `settings`, `cvars`. Check `GetCapabilities()` before using a tier if you want to degrade on an older EMS.
+Capability ids: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `conditions`, `stepfunctions`, `plugins`, `authoring`, `panels`, `views`, `settings`, `cvars`, `stepdata`, `macro`, `slash`. Check `GetCapabilities()` before using a tier if you want to degrade on an older EMS.
 
 ### Tier 1 - events (listen only)
 
@@ -109,6 +109,8 @@ Capability ids: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `co
 
 - `GRIPEMS.API:GetSequenceList()` -> array of `{ name, stepCount, currentStep, stepFunction }`
 - `GRIPEMS.API:GetSequenceInfo(name)` -> table or nil. Fields: `name, stepFunction, versionCount, defaultVersion, activeVersionIndex, activeStepCount, contextVersionCount, classID, specID, author, description, privacyMode, version, createdAt, updatedAt, disabled, keybind, variableDeps`
+- `GRIPEMS.API:GetSequenceSteps(name)` -> array of `{ index, spellID, spellName, icon }` for the active version, or nil. Public scalars (never secret); the per-step view for action-bar chrome. Pair with `SEQUENCE_STEP_ADVANCED`. Capability `stepdata`.
+- `GRIPEMS.API:GetSequenceMacroIndex(name)` -> macro slot index or nil (read-only; never creates the macro). Capability `macro`.
 - `GRIPEMS.API:GetCurrentContext()` -> string ("none", "Raid", "Arena", ...)
 - `GRIPEMS.API:GetSetting(key)` -> value or nil. Allowlist: `uiLayout` (string|nil), `debug` (boolean). For any other setting, listen to `SETTING_CHANGED`.
 - `GRIPEMS.API:GetRegisteredPlugins()` -> array of `{ name, version, loaded, sequenceCount }`
@@ -179,6 +181,8 @@ Reversible forms on the handle take the spec alone (id read from `spec.id`): `ha
 - `handle:RevertCVarProfile()` -> ok
 - `handle:RegisterImportProvider(spec)` -> ok. `spec = { id, name, Parse = function(self, text) ... end, Detect? }`
 - `handle:RegisterExportProvider(spec)` -> ok. `spec = { id, name, Serialize = function(self, seq) ... end }`
+- `handle:EnsureSequenceMacro(name)` -> macro slot index, or false + reason. Creates the sequence's action-bar macro if absent (journaled, deleted on disable); an existing EMS/user macro is returned without journaling. Guards in-combat, slot-pool-full, and unknown sequence. `PickupMacro(index)` to drag it onto a bar. Capability `macro`.
+- `handle:RegisterSlashCommand(sub, handler, helpText?)` -> ok, or false + reason. Registers a `/gems` subcommand; `handler(argString)` runs in pcall; a built-in or duplicate name is rejected; journaled, removed on disable. Capability `slash`.
 - `handle:GetId()` -> your plugin id
 
 Ownership is strict: a plugin may create, edit, or delete only sequences it owns. A user's sequence and another plugin's objects are rejected.
@@ -189,7 +193,7 @@ Ownership is strict: a plugin may create, edit, or delete only sequences it owns
 
 ### The lock list (no public write path, ever)
 
-Rotation execution; secure buttons and the keybind matrix; authorship and signing; peer-to-peer transmission; direct secure-CVar writes; raw persistence; taint-laundering and secret values. The rule: if a call would change which spell fires, how a key binds, who authored a sequence, what is transmitted, or what is saved, it does not exist on the public API. You can read derived state (active version index, context, summaries); you cannot write any of these.
+Rotation execution; secure buttons and the keybind matrix; authorship and signing; peer-to-peer transmission; direct secure-CVar writes; raw persistence; taint-laundering and secret values. The rule: if a call would change which spell fires, how a key binds, who authored a sequence, what is transmitted, or what is saved, it does not exist on the public API. You can read derived state (active version index, context, summaries); you cannot write any of these. To put a sequence on an action bar, use `handle:EnsureSequenceMacro` — the generated 255-char macro is the supported bar path; setting a keybind from a plugin stays locked.
 
 ### Secret values
 
