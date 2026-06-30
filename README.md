@@ -2,7 +2,7 @@
 
 Developer documentation for writing plugins for **GRIP - Enhanced Macro Sequencer**, a World of Warcraft Retail addon.
 
-GRIP-EMS exposes a frozen, versioned Lua table — `GRIPEMS.API` — that lets your addon extend it without editing its files. You can listen to events, read sequence and context state, and register your own variables, conditions, and step functions. v2 adds owner-scoped authoring: a plugin can create its own sequences, override settings, request CVar profiles, and rehome EMS's panels into a UI layout of its own, up to a full overhaul — and everything it does is reverted when it's disabled. Through all of it the locked core holds: nothing you call changes how EMS runs rotations, binds keys, signs sequences, or saves data. Extend the addon, don't reach into it.
+GRIP-EMS exposes a frozen, versioned Lua table — `GRIPEMS.API` — that lets your addon extend it without editing its files. You can listen to events, read sequence and context state, and register your own variables, conditions, and step functions. Beyond that, a plugin can author content EMS owns (its own sequences, settings, and CVar profiles), rehome EMS's panels into a UI layout of its own up to a full overhaul, read a sequence's per-step spells, put a sequence on an action bar, and register its own `/gems` subcommand — and everything it does is reverted when it's disabled. Through all of it the locked core holds: nothing you call changes how EMS runs rotations, binds keys, signs sequences, or saves data. Extend the addon, don't reach into it.
 
 - **Docs site:** https://JesperLive.github.io/GRIP-EMS-PluginAPI
 - **Wiki:** https://github.com/JesperLive/GRIP-EMS-PluginAPI/wiki
@@ -42,11 +42,11 @@ An AI assistant writes correct plugins when it has the API in front of it. Paste
 
 ## Versioning
 
-`GRIPEMS.API.API_VERSION` is an integer; it goes up when the surface gains a level worth gating on (v1 → v2 added the handle and the authoring tier). Call `GRIPEMS.API:RequireVersion(n)` in your init and bail out cleanly if it returns false.
+`GRIPEMS.API.API_VERSION` is an integer; it goes up when the surface gains a level worth gating on (v1 → v2 added the handle and the authoring tier; v3 added action-bar macros and slash subcommands). Call `GRIPEMS.API:RequireVersion(n)` in your init and bail out cleanly if it returns false.
 
 ## Status
 
-API_VERSION 2. Documented against GRIP-EMS 2.2.0 on WoW Retail 12.0.7 (Midnight).
+API_VERSION 3. Documented against GRIP-EMS 2.3.0 on WoW Retail 12.0.7 (Midnight).
 
 ## License
 

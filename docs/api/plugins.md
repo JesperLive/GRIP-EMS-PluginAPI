@@ -1,6 +1,6 @@
 # Plugins and the handle
 
-Tier 0 ends here. After the version handshake you register your plugin and get back a *handle* — a frozen table that owns everything your plugin contributes. Register through the handle and EMS can undo all of it when the plugin is disabled. That reversal is the main thing the v2 API adds; the [reversibility](../concepts/reversibility.md) page covers what it guarantees.
+Tier 0 ends here. After the version handshake you register your plugin and get back a *handle* — a frozen table that owns everything your plugin contributes. Register through the handle and EMS can undo all of it when the plugin is disabled. That reversal is the main thing the handle adds; the [reversibility](../concepts/reversibility.md) page covers what it guarantees.
 
 You don't have to use a handle. The bare `GRIPEMS.API:Register*` calls still work and still validate. But a contribution made that way is anonymous — EMS has no owner to attribute it to, so it isn't tracked and isn't reverted. If your plugin can be turned off, register through the handle.
 
@@ -38,7 +38,7 @@ The return is a frozen handle, or `nil` plus a reason. The handle is a read-only
 
 - registry contributions — `RegisterVariableProvider`, `RegisterCondition`, `RegisterStepFunction`, `RegisterLayoutProvider`, `RegisterImportProvider`, `RegisterExportProvider` (the [registries](registries.md) contracts, owned)
 - UI — `MountPanel`, `SetClassicChrome`, `RegisterView`, `SetActiveView` (see [UI and layout](ui-layout.md))
-- authoring — `CreateSequence`, `UpdateSequence`, `DeleteSequence`, `SelectSequence`, `OpenEditor`, `RegisterSetting`, `OverrideSetting`, `RevertSetting`, `RequestCVarProfile`, `RevertCVarProfile` (the [authoring](authoring.md) tier)
+- authoring — `CreateSequence`, `UpdateSequence`, `DeleteSequence`, `SelectSequence`, `OpenEditor`, `RegisterSetting`, `OverrideSetting`, `RevertSetting`, `RequestCVarProfile`, `RevertCVarProfile`, `EnsureSequenceMacro`, `RegisterSlashCommand` (the [authoring](authoring.md) tier)
 
 The handle methods take the same specs as their `GRIPEMS.API` counterparts, with one difference: the handle's `RegisterVariableProvider(spec)` takes the spec alone and reads the id from `spec.id`, where the bare `GRIPEMS.API:RegisterVariableProvider(id, spec)` takes both. The handle already knows who owns the contribution.
 

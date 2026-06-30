@@ -1,6 +1,6 @@
 # Reversibility
 
-The hard rule behind the v2 API: **disabling a plugin undoes everything it did.** Whatever your plugin registered, authored, overrode, or mounted, EMS removes on disable and returns to its default-installed state. A user can try a full UI overhaul, turn it off, and get the stock addon back — no leftovers, no reload needed.
+The hard rule behind the plugin API: **disabling a plugin undoes everything it did.** Whatever your plugin registered, authored, overrode, or mounted, EMS removes on disable and returns to its default-installed state. A user can try a full UI overhaul, turn it off, and get the stock addon back — no leftovers, no reload needed.
 
 This is why the [handle](../api/plugins.md) matters. EMS can only revert what it can attribute to a plugin, and the handle is how it knows. A contribution made through the handle is owned and tracked; a bare `GRIPEMS.API:Register*` call is anonymous and stays.
 

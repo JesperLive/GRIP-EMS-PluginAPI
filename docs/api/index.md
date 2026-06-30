@@ -31,7 +31,7 @@ Read accessors return the value directly, or `nil` when there's nothing to retur
 | `API:GetCapabilities()` | fresh array of capability ids |
 | `API:RegisterPlugin(id, meta)` | frozen handle, or `nil` + reason |
 
-`RegisterPlugin` is the gateway to most of the v2 surface — it hands back a handle that owns everything your plugin contributes, so EMS can revert it on disable. See [Plugins and the handle](plugins.md).
+`RegisterPlugin` is the gateway to most of the surface — it hands back a handle that owns everything your plugin contributes, so EMS can revert it on disable. See [Plugins and the handle](plugins.md).
 
 ### Tier 1 — Events ([details](events.md))
 
@@ -47,6 +47,8 @@ Read accessors return the value directly, or `nil` when there's nothing to retur
 |---|---|
 | `API:GetSequenceList()` | array of sequence summaries |
 | `API:GetSequenceInfo(name)` | metadata table, or `nil` |
+| `API:GetSequenceSteps(name)` | array of per-step `{ index, spellID, spellName, icon }`, or `nil` |
+| `API:GetSequenceMacroIndex(name)` | macro slot index, or `nil` |
 | `API:GetCurrentContext()` | context key string |
 | `API:GetSetting(key)` | allowlisted value, or `nil` |
 | `API:GetRegisteredPlugins()` | array of plugin records |
@@ -101,6 +103,8 @@ Owner-scoped writes on the [handle](plugins.md), every one reverted on disable.
 | `handle:OverrideSetting(key, value)` / `handle:RevertSetting(key)` | `true`, or `false` + reason |
 | `handle:RequestCVarProfile(key)` / `handle:RevertCVarProfile()` | `true`, or `false` + reason |
 | `handle:RegisterImportProvider(spec)` / `handle:RegisterExportProvider(spec)` | `true`, or `false` + reason |
+| `handle:EnsureSequenceMacro(name)` | macro slot index, or `false` + reason |
+| `handle:RegisterSlashCommand(sub, handler, helpText?)` | `true`, or `false` + reason |
 
 ### Tier 5 — Theme ([details](theme.md))
 

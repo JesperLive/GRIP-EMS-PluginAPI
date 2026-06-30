@@ -10,7 +10,7 @@ Current value: `3`.
 
 ## `API.EMS_VERSION`
 
-A string, the running EMS version (for example `"2.2.0"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release.
+A string, the running EMS version (for example `"2.3.0"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release.
 
 ## `API:RequireVersion(n)`
 
@@ -76,7 +76,7 @@ The order in the array follows the source: `events`, `data`, `sequences`, `ui`, 
 
 ## `API:RegisterPlugin(id, meta)`
 
-The handshake ends here. Once the version checks out, register your plugin and take its handle — the table that owns everything your plugin contributes and the entry to most of the v2 surface.
+The handshake ends here. Once the version checks out, register your plugin and take its handle — the table that owns everything your plugin contributes and the entry to most of the surface.
 
 ```lua
 local handle, reason = API:RegisterPlugin("acme_overhaul", {
