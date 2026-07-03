@@ -86,7 +86,7 @@ local handle = API:RegisterPlugin("my_plugin", {
 })
 ```
 
-Everything you do through the handle is owned by your plugin and undone when the user disables it, so EMS returns to stock with no leftovers. That reversal needs `API_VERSION` 2 — gate on `RequireVersion(2)` if you use it. See [Plugins and the handle](api/plugins.md).
+Everything you do through the handle is owned by your plugin and undone when the user disables it, so EMS returns to stock with no leftovers. That reversal needs `API_VERSION` 2 or higher — gate on `RequireVersion(2)` if you use it. See [Plugins and the handle](api/plugins.md).
 
 ## 6. Where to go next
 

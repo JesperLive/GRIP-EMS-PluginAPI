@@ -1,6 +1,6 @@
 # Tier 5 — Theme
 
-One method, on `GRIPEMS.API.UI`, that makes your plugin's frames inherit the active EMS skin so they match the rest of the window. It controls colours, fonts, textures, and borders — appearance only. It gives you no structural authority over EMS frames.
+The theme half of Tier 5 is a single method on `GRIPEMS.API.UI` — a re-export of EMS's own panel-registration hook, not a capability of its own — that makes your plugin's frames inherit the active EMS skin so they match the rest of the window. It controls colours, fonts, textures, and borders — appearance only. It gives you no structural authority over EMS frames.
 
 ## `API.UI:RegisterPanelFrame(frame, category, class)`
 

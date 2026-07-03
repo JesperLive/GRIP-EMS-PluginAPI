@@ -10,7 +10,7 @@ Current value: `3`.
 
 ## `API.EMS_VERSION`
 
-A string, the running EMS version (for example `"2.3.0"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release.
+A string, the running EMS version (for example `"2.3.4"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release.
 
 ## `API:RequireVersion(n)`
 

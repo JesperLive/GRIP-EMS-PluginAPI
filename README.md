@@ -46,7 +46,7 @@ An AI assistant writes correct plugins when it has the API in front of it. Paste
 
 ## Status
 
-API_VERSION 3. Documented against GRIP-EMS 2.3.0 on WoW Retail 12.0.7 (Midnight).
+API_VERSION 3. Documented against GRIP-EMS 2.3.4 on WoW Retail 12.0.7 (Midnight).
 
 ## License
 

@@ -18,7 +18,7 @@ The [AI-assisted plugin guide](../guides/ai-assisted.md) has example prompts and
 
 EMS (GRIP - Enhanced Macro Sequencer) is a World of Warcraft Retail addon. A plugin is its own addon that extends EMS through one frozen table, `GRIPEMS.API` (global alias `_G.GRIPEMS_API`). You never edit EMS and never reach into `_G.GRIPEMS`. Everything a plugin contributes through its handle is reverted the moment the user disables it, so the addon returns to stock.
 
-API_VERSION: 3. Documented against GRIP-EMS 2.3.0 on WoW Retail 12.0.7.
+API_VERSION: 3. Documented against GRIP-EMS 2.3.4 on WoW Retail 12.0.7.
 
 ### Hard rules (follow every one)
 
@@ -65,7 +65,7 @@ end)
 ### Tier 0 - discovery
 
 - `GRIPEMS.API.API_VERSION` -> integer (3)
-- `GRIPEMS.API.EMS_VERSION` -> string ("2.3.0"); for logs only, don't gate features on it
+- `GRIPEMS.API.EMS_VERSION` -> string ("2.3.4"); for logs only, don't gate features on it
 - `GRIPEMS.API:RequireVersion(n)` -> true, or false + reason
 - `GRIPEMS.API:GetCapabilities()` -> array of capability id strings
 - `GRIPEMS.API:RegisterPlugin(id, meta)` -> handle, or nil + reason
@@ -189,7 +189,7 @@ Ownership is strict: a plugin may create, edit, or delete only sequences it owns
 
 ### Tier 5 - theme (`GRIPEMS.API.UI`)
 
-- `:RegisterPanelFrame(frame, category, class)` -> makes your frame inherit the active EMS skin. Example: `("panel", "panel.acmeNav")`. Appearance only, no structural authority. Namespace `class` to your plugin.
+- `:RegisterPanelFrame(frame, category, class)` -> makes your frame inherit the active EMS skin. Example: `(myFrame, "panel", "panel.acmeNav")`. Appearance only, no structural authority. Namespace `class` to your plugin.
 
 ### The lock list (no public write path, ever)
 

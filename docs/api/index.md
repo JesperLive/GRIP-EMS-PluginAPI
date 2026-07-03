@@ -106,6 +106,8 @@ Owner-scoped writes on the [handle](plugins.md), every one reverted on disable.
 | `handle:EnsureSequenceMacro(name)` | macro slot index, or `false` + reason |
 | `handle:RegisterSlashCommand(sub, handler, helpText?)` | `true`, or `false` + reason |
 
+The Tier 3 and Tier 4 registrars also have owner-scoped handle forms — `handle:RegisterVariableProvider(spec)`, `handle:RegisterCondition(spec)`, `handle:RegisterStepFunction(spec)`, `handle:RegisterLayoutProvider(provider)`, `handle:RegisterView(id, def)`, `handle:SetActiveView(id)`, `handle:MountPanel(panelId, host)`, and `handle:SetClassicChrome(enabled)` — the same contract as the `API:` / `API.UI:` forms, scoped to your plugin and reverted on disable.
+
 ### Tier 5 — Theme ([details](theme.md))
 
 `API.UI:RegisterPanelFrame(frame, category, class)` registers your frame with the EMS theme so it inherits the active skin. It lives on the UI sub-table.

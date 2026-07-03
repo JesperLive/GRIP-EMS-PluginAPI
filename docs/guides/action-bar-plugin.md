@@ -21,7 +21,7 @@ else
 end
 ```
 
-`EnsureSequenceMacro` is owner-scoped and reversible. A macro your plugin caused EMS to create is deleted when your plugin is disabled; a macro EMS or the user already had is handed back untouched and never deleted on your behalf. It returns `false` plus a reason in combat, when the macro slot pool is full, or for a sequence that isn't active.
+`EnsureSequenceMacro` is owner-scoped and reversible. A macro your plugin caused EMS to create is deleted when your plugin is disabled; a macro EMS or the user already had is handed back untouched and never deleted on your behalf. It returns `false` plus a reason in combat, when the macro slot pool is full, or for a sequence EMS doesn't have loaded (the reason string reads `unknown sequence`).
 
 To read the slot without creating anything, use [`GetSequenceMacroIndex`](../api/data.md#apigetsequencemacroindexname) — it returns `nil` when there's no macro yet.
 
