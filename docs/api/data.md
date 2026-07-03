@@ -45,6 +45,11 @@ Returns a metadata snapshot for one sequence, or `nil` when no sequence by that 
 | `specID` | number \| nil | spec the sequence is tagged to, if any |
 | `author` | string \| nil | the sequence's author, if set |
 | `description` | string \| nil | the sequence's description, if set |
+| `help` | string \| nil | the sequence's help text, if set |
+| `helplink` | string \| nil | the sequence's help link, if set |
+| `changelog` | string \| nil | the sequence's change notes, if set |
+| `talentString` | string \| nil | the sequence's talent import code, if set |
+| `url` | string \| nil | the sequence's source URL, if set |
 | `privacyMode` | string \| nil | the privacy mode stamped on the sequence |
 | `version` | number \| nil | the sequence's stored version number |
 | `createdAt` | number \| nil | creation timestamp |

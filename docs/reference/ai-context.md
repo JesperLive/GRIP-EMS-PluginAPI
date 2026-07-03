@@ -108,7 +108,7 @@ Capability ids: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `co
 ### Tier 2 - data (read-only; you get copies and scalars)
 
 - `GRIPEMS.API:GetSequenceList()` -> array of `{ name, stepCount, currentStep, stepFunction }`
-- `GRIPEMS.API:GetSequenceInfo(name)` -> table or nil. Fields: `name, stepFunction, versionCount, defaultVersion, activeVersionIndex, activeStepCount, contextVersionCount, classID, specID, author, description, privacyMode, version, createdAt, updatedAt, disabled, keybind, variableDeps`
+- `GRIPEMS.API:GetSequenceInfo(name)` -> table or nil. Fields: `name, stepFunction, versionCount, defaultVersion, activeVersionIndex, activeStepCount, contextVersionCount, classID, specID, author, description, help, helplink, changelog, talentString, url, privacyMode, version, createdAt, updatedAt, disabled, keybind, variableDeps`
 - `GRIPEMS.API:GetSequenceSteps(name)` -> array of `{ index, spellID, spellName, icon }` for the active version, or nil. Public scalars (never secret); the per-step view for action-bar chrome. Pair with `SEQUENCE_STEP_ADVANCED`. Capability `stepdata`.
 - `GRIPEMS.API:GetSequenceMacroIndex(name)` -> macro slot index or nil (read-only; never creates the macro). Capability `macro`.
 - `GRIPEMS.API:GetCurrentContext()` -> string ("none", "Raid", "Arena", ...)
