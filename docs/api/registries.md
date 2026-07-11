@@ -90,8 +90,16 @@ local ok, reason = API:RegisterStepFunction("acme_reverse", {
 |---|---|---|---|
 | `id` | string | yes | must equal the registry id, and must not collide with a built-in |
 | `name` | string | yes | human label |
-| `Expand` | function | yes | `Expand(self, resolvedStepTexts)` → array of macrotext strings |
+| `Expand` | function | yes | `Expand(self, resolvedStepTexts)` → array of macrotext strings. Each entry of `resolvedStepTexts` is a **full macrotext line** after variable substitution — e.g. `"/cast [combat] Kill Command"` — not a bare spell name. |
 | `OnRegister` | function | no | called once at register time, inside `pcall` |
+
+!!! warning "`resolvedStepTexts` holds macrotext, not spell names"
+    A step is a macro line, so an entry looks like `/cast [combat] Kill Command` or
+    `/use 6:Trinket`, already variable-substituted. If you build a lookup table keyed on
+    spell names and index it with these strings, every lookup misses, your reorder loop
+    produces nothing, and `Expand` silently returns its input unchanged — EMS sees a valid
+    array of strings and has no way to tell you it did nothing. Match on substrings, or
+    parse the macro line, but do not compare against a bare name.
 
 A registered step function becomes active when a sequence's active version names it as its `stepFunction`. Registration is rejected if the id collides with a built-in strategy or another registered one. `Expand` must be pure — return ordered strings, don't touch game state.
 

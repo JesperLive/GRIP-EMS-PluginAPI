@@ -162,7 +162,7 @@ SAFETY: hosts are plain, non-secure, reparentable frames. Never place a secure f
     - `spec = { id, name, Evaluate = function(self) ... end, OnRegister? }` ; `Evaluate` returns a boolean.
 - `GRIPEMS.API:EvaluateCondition(id)` -> clean boolean (users call this inside a variable body)
 - `GRIPEMS.API:RegisterStepFunction(id, spec)` -> ok
-    - `spec = { id, name, Expand = function(self, resolvedStepTexts) ... end, OnRegister? }` ; `Expand` returns an array of macrotext strings in execution order. Pure.
+    - `spec = { id, name, Expand = function(self, resolvedStepTexts) ... end, OnRegister? }` ; `Expand` returns an array of macrotext strings in execution order. Pure. Each entry of `resolvedStepTexts` is itself a full macrotext line after variable substitution (e.g. `"/cast [combat] Kill Command"`), NOT a bare spell name -- keying a lookup on spell names silently no-ops.
 - `GRIPEMS.API:RegisterSequences(name, version, seqNames, seqTable)` -> ok (ships a static set; a user sequence wins on a name clash)
 
 Reversible forms on the handle take the spec alone (id read from `spec.id`): `handle:RegisterVariableProvider(spec)`, `handle:RegisterCondition(spec)`, `handle:RegisterStepFunction(spec)`, `handle:RegisterLayoutProvider(provider)`.
