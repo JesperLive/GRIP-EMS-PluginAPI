@@ -33,7 +33,9 @@ Returns an array of summaries for the active sequences, sorted by name. Each ent
     Neither field is the *authored* count. A sequence is authored as an action tree,
     and compiling it inserts interleave copies, unrolls loops, and applies the
     version's repeat count -- so `activeStepCount` can exceed the number of steps the
-    user actually wrote. The authored tree is not currently exposed by this API.
+    user actually wrote. The authored **base order** is available via
+    `API:GetAuthoredSteps(name)`; the authored **tree** itself -- intervals, Loop
+    repeat counts, and IF branches -- is still not exposed.
 
 This is the lightweight listing view. For richer per-sequence metadata, call `GetSequenceInfo`.
 
@@ -97,6 +99,30 @@ Returns an array of the active version's steps, or `nil` when no sequence by tha
 | `icon` | number \| nil | the spell's icon texture id, for a button face |
 
 This is the per-step view an action-bar plugin draws chrome from. Pair it with the `SEQUENCE_STEP_ADVANCED` event, which hands your handler `(seqName, step, numSteps)`, to know which entry is live, then call `C_Spell.GetSpellCooldown` yourself for the swipe and glow. EMS resolves the ids through the same path the engine compiles from, so they match what the sequence actually casts. The [action-bar plugin guide](../guides/action-bar-plugin.md) walks through the whole flow.
+
+## `API:GetAuthoredSteps(name)`
+
+```lua
+local steps = API:GetAuthoredSteps("My Rotation")
+if steps then
+    for _, s in ipairs(steps) do
+        print(s.index, s.spellID, s.spellName, s.icon)
+    end
+end
+```
+
+Returns the active version's steps in **authored base order** — the order the user actually wrote, before the step function expands the sequence and before interleave copies are inserted — or `nil` when no sequence by that name is active. Each entry is the same fresh table of public scalars `GetSequenceSteps` returns, so nothing here aliases engine state or carries a taint risk:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `index` | number | the step's position in authored order, 1-based |
+| `spellID` | number \| nil | the step's resolved spell id, or `nil` for a step that isn't a single spell |
+| `spellName` | string \| nil | the spell name, when one resolves |
+| `icon` | number \| nil | the spell's icon texture id, for a button face |
+
+This is the **authored** domain, and it is deliberately kept distinct from the **execution** domain `GetSequenceSteps` returns. Its indices do **not** line up with `currentStep` or the step index `SEQUENCE_STEP_ADVANCED` hands your handler — those live in the execution domain, where the step function has already expanded the array. Use `GetSequenceSteps` when you need to track the live step; use this when you want the base order the user built.
+
+Two limits keep this a flat *base order* rather than the action tree: a Loop is unrolled — a Loop with repeat 3 contributes its children three times — and an IF branch is flattened. The version's own repeat count is **not** applied, and interleave copies are suppressed, so a plugin reading per-spell frequency sees each authored spell once instead of the interleave-inflated count `GetSequenceInfo`'s `activeStepCount` carries.
 
 ## `API:GetSequenceMacroIndex(name)`
 

@@ -110,6 +110,7 @@ Capability ids: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `co
 - `GRIPEMS.API:GetSequenceList()` -> array of `{ name, stepCount, currentStep, stepFunction }`
 - `GRIPEMS.API:GetSequenceInfo(name)` -> table or nil. Fields: `name, stepFunction, versionCount, defaultVersion, activeVersionIndex, activeStepCount, contextVersionCount, classID, specID, author, description, help, helplink, changelog, talentString, url, privacyMode, version, createdAt, updatedAt, disabled, keybind, variableDeps`
 - `GRIPEMS.API:GetSequenceSteps(name)` -> array of `{ index, spellID, spellName, icon }` for the active version, or nil. Public scalars (never secret); the per-step view for action-bar chrome. Pair with `SEQUENCE_STEP_ADVANCED`. Capability `stepdata`.
+- `GRIPEMS.API:GetAuthoredSteps(name)` -> array of `{ index, spellID, spellName, icon }` in AUTHORED base order (the order the user wrote), or nil. Interleave copies suppressed and the version repeatCount not applied; Loops unrolled and IF branches flattened, so it is the base order, not the tree. Distinct from GetSequenceSteps' EXECUTION domain -- its indices do NOT map to currentStep or the SEQUENCE_STEP_ADVANCED step index.
 - `GRIPEMS.API:GetSequenceMacroIndex(name)` -> macro slot index or nil (read-only; never creates the macro). Capability `macro`.
 - `GRIPEMS.API:GetCurrentContext()` -> string ("none", "Raid", "Arena", ...)
 - `GRIPEMS.API:GetSetting(key)` -> value or nil. Allowlist: `uiLayout` (string|nil), `debug` (boolean). For any other setting, listen to `SETTING_CHANGED`.
