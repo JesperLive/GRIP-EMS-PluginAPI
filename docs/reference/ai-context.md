@@ -110,7 +110,7 @@ Capability ids: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `co
 - `GRIPEMS.API:GetSequenceList()` -> array of `{ name, stepCount, currentStep, stepFunction }`
 - `GRIPEMS.API:GetSequenceInfo(name)` -> table or nil. Fields: `name, stepFunction, versionCount, defaultVersion, activeVersionIndex, activeStepCount, contextVersionCount, classID, specID, author, description, help, helplink, changelog, talentString, url, privacyMode, version, createdAt, updatedAt, disabled, keybind, variableDeps`
 - `GRIPEMS.API:GetSequenceSteps(name)` -> array of `{ index, spellID, spellName, icon }` for the active version, or nil. Public scalars (never secret); the per-step view for action-bar chrome. Pair with `SEQUENCE_STEP_ADVANCED`. Capability `stepdata`.
-- `GRIPEMS.API:GetAuthoredSteps(name)` -> array of `{ index, spellID, spellName, icon }` in AUTHORED base order (the order the user wrote), or nil. Interleave copies suppressed and the version repeatCount not applied; Loops unrolled and IF branches flattened, so it is the base order, not the tree. Distinct from GetSequenceSteps' EXECUTION domain -- its indices do NOT map to currentStep or the SEQUENCE_STEP_ADVANCED step index.
+- `GRIPEMS.API:GetAuthoredSteps(name)` -> array of `{ index, spellID, spellName, icon }` in AUTHORED base order (the order the user wrote), or nil. Interleave copies suppressed and the version repeatCount not applied; Loops unrolled and IF branches flattened, so it is the base order, not the tree. Distinct from GetSequenceSteps' EXECUTION domain -- its indices do NOT map to currentStep or the SEQUENCE_STEP_ADVANCED step index. Capability `stepdata`.
 - `GRIPEMS.API:GetSequenceMacroIndex(name)` -> macro slot index or nil (read-only; never creates the macro). Capability `macro`.
 - `GRIPEMS.API:GetCurrentContext()` -> string ("none", "Raid", "Arena", ...)
 - `GRIPEMS.API:GetSetting(key)` -> value or nil. Allowlist: `uiLayout` (string|nil), `debug` (boolean). For any other setting, listen to `SETTING_CHANGED`.
@@ -194,7 +194,7 @@ Ownership is strict: a plugin may create, edit, or delete only sequences it owns
 
 ### The lock list (no public write path, ever)
 
-Rotation execution; secure buttons and the keybind matrix; authorship and signing; peer-to-peer transmission; direct secure-CVar writes; raw persistence; taint-laundering and secret values. The rule: if a call would change which spell fires, how a key binds, who authored a sequence, what is transmitted, or what is saved, it does not exist on the public API. You can read derived state (active version index, context, summaries); you cannot write any of these. To put a sequence on an action bar, use `handle:EnsureSequenceMacro` — the generated 255-char macro is the supported bar path; setting a keybind from a plugin stays locked.
+Rotation execution; secure buttons and the keybind matrix; authorship and signing; peer-to-peer transmission; direct secure-CVar writes; raw persistence; taint-laundering and secret values. The rule: if a call would change which spell fires, how a key binds, who authored a sequence, what is transmitted, or what is saved, it does not exist on the public API. You can read derived state (active version index, context, summaries); you cannot write any of these. To put a sequence on an action bar, use `handle:EnsureSequenceMacro` -- the generated 255-char macro is the supported bar path; setting a keybind from a plugin stays locked.
 
 ### Secret values
 
