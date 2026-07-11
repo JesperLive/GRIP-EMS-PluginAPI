@@ -15,9 +15,25 @@ Returns an array of summaries for the active sequences, sorted by name. Each ent
 | Field | Type | Meaning |
 |---|---|---|
 | `name` | string | sequence name |
-| `stepCount` | number | steps in the active version |
+| `stepCount` | number | how many steps the button actually cycles through -- the *execution* count. Equals `#GetSequenceSteps(name)`, and is the correct denominator for `currentStep`. |
 | `currentStep` | number | step the sequence is currently on (1 when idle) |
 | `stepFunction` | string | active version's step-function id (e.g. `"Sequential"`) |
+
+!!! note "Two step counts, two meanings"
+    `stepCount` here is the **execution** count: the length of the expanded array the
+    secure button cycles through. `GetSequenceInfo`'s `activeStepCount` is the
+    **compiled** count: the length of the flat step array the active version compiles
+    to *before* the step function expands it. They are equal for `Sequential` and
+    `Random`, and they differ for `Priority`, `ReversePriority`, and any registered
+    step-function expander -- a 4-step Priority sequence has a compiled count of 4 and
+    an execution count of 10, because Priority pre-expands `[A,B,C,D]` into
+    `[A, A,B, A,B,C, A,B,C,D]`. Pair `currentStep` with `stepCount`; never with
+    `activeStepCount`.
+
+    Neither field is the *authored* count. A sequence is authored as an action tree,
+    and compiling it inserts interleave copies, unrolls loops, and applies the
+    version's repeat count -- so `activeStepCount` can exceed the number of steps the
+    user actually wrote. The authored tree is not currently exposed by this API.
 
 This is the lightweight listing view. For richer per-sequence metadata, call `GetSequenceInfo`.
 
@@ -39,7 +55,7 @@ Returns a metadata snapshot for one sequence, or `nil` when no sequence by that 
 | `versionCount` | number | how many versions the sequence has |
 | `defaultVersion` | number \| nil | the default version index |
 | `activeVersionIndex` | number \| nil | version resolved under the current context |
-| `activeStepCount` | number | steps in the active version |
+| `activeStepCount` | number | how many steps the active version *compiles to*, before the step function expands them. For an expanding step function this is smaller than `GetSequenceList`'s `stepCount` -- see the note above. Not the same as the number of steps the user authored: compiling inserts interleave copies, unrolls loops, and applies the version's repeat count. |
 | `contextVersionCount` | number | versions tracked for context resolution |
 | `classID` | number \| nil | class the sequence is tagged to, if any |
 | `specID` | number \| nil | spec the sequence is tagged to, if any |
