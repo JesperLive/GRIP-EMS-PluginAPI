@@ -48,6 +48,7 @@ Read accessors return the value directly, or `nil` when there's nothing to retur
 | `API:GetSequenceList()` | array of sequence summaries |
 | `API:GetSequenceInfo(name)` | metadata table, or `nil` |
 | `API:GetSequenceSteps(name)` | array of per-step `{ index, spellID, spellName, icon }`, or `nil` |
+| `API:GetAuthoredSteps(name)` | same per-step shape in AUTHORED order, or `nil`. Added in EMS 2.3.7 -- guard with `if API.GetAuthoredSteps then` |
 | `API:GetSequenceMacroIndex(name)` | macro slot index, or `nil` |
 | `API:GetCurrentContext()` | context key string |
 | `API:GetSetting(key)` | allowlisted value, or `nil` |
