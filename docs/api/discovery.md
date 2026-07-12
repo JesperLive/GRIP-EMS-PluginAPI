@@ -8,9 +8,19 @@ An integer, the contract version of the API surface. It goes up when the surface
 
 Current value: `3`.
 
+It does not go up for every addition. A purely additive method can land without a bump: `API:GetAuthoredSteps` arrived in EMS 2.3.7 while `API_VERSION` stayed at `3`. So a version check proves a *tier* is present — it does not prove any particular method is. When you depend on a method that landed mid-version, test for the method itself:
+
+```lua
+if API.GetAuthoredSteps then
+    local steps = API:GetAuthoredSteps("My Rotation")
+end
+```
+
+Reading a key the API does not have returns `nil` rather than raising, so the check is safe on any build. Note the dot on the check and the colon on the call.
+
 ## `API.EMS_VERSION`
 
-A string, the running EMS version (for example `"2.3.4"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release.
+A string, the running EMS version (for example `"2.3.7"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release, and presence-check any method that landed mid-version.
 
 ## `API:RequireVersion(n)`
 
@@ -28,6 +38,8 @@ end
 ```
 
 `n` must be a number. Anything else returns `false` with a reason.
+
+This only tells you the tier is there. A method added additively inside a version — see `API_VERSION` above — still needs its own presence check.
 
 ## `API:GetCapabilities()`
 
@@ -71,6 +83,8 @@ The capability ids in this build:
 | `stepdata` | 2 | `GetSequenceSteps` / `GetAuthoredSteps` |
 | `macro` | 2 / 5 | `GetSequenceMacroIndex` and `handle:EnsureSequenceMacro` |
 | `slash` | 5 | `handle:RegisterSlashCommand` |
+
+An id can be older than everything it now covers. `stepdata` shipped with `GetSequenceSteps` and only later grew to cover `GetAuthoredSteps`, so the id answering yes does not prove every method in its row exists on that build. Capabilities gate the tier; presence-check the method.
 
 The order in the array follows the source: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `conditions`, `stepfunctions`, `plugins`, `authoring`, `panels`, `views`, `settings`, `cvars`, `stepdata`, `macro`, `slash`. Don't depend on the order — check for the id you want.
 
