@@ -68,7 +68,7 @@ The capability ids in this build:
 | `settings` | 5 | `RegisterSetting` / `OverrideSetting` |
 | `cvars` | 5 | `RequestCVarProfile` |
 | `authoring` | 5 | owned sequences, settings, and CVar profiles |
-| `stepdata` | 2 | `GetSequenceSteps` |
+| `stepdata` | 2 | `GetSequenceSteps` / `GetAuthoredSteps` |
 | `macro` | 2 / 5 | `GetSequenceMacroIndex` and `handle:EnsureSequenceMacro` |
 | `slash` | 5 | `handle:RegisterSlashCommand` |
 
