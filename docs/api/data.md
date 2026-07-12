@@ -103,13 +103,26 @@ This is the per-step view an action-bar plugin draws chrome from. Pair it with t
 ## `API:GetAuthoredSteps(name)`
 
 ```lua
-local steps = API:GetAuthoredSteps("My Rotation")
-if steps then
-    for _, s in ipairs(steps) do
-        print(s.index, s.spellID, s.spellName, s.icon)
+-- Presence check: GetAuthoredSteps arrived in EMS 2.3.7 and API_VERSION
+-- did not change, so RequireVersion cannot tell you it is there.
+if API.GetAuthoredSteps then
+    local steps = API:GetAuthoredSteps("My Rotation")
+    if steps then
+        for _, s in ipairs(steps) do
+            print(s.index, s.spellID, s.spellName, s.icon)
+        end
     end
 end
 ```
+
+!!! warning "Added in EMS 2.3.7 -- check for it before you call it"
+
+    `API_VERSION` is still `3`: this accessor is an additive change, and the contract
+    only bumps on a breaking one. The `stepdata` capability predates it too. That means
+    neither `RequireVersion(3)` nor the capability list can tell you whether this build
+    has `GetAuthoredSteps` -- both answer yes on EMS 2.3.6, where it is `nil`. Test for
+    the method itself: `if API.GetAuthoredSteps then ... end`. Reading a key the API does
+    not have returns `nil` rather than raising, so the check is safe on any build.
 
 Returns the active version's steps in **authored base order** — the order the user actually wrote, before the step function expands the sequence and before interleave copies are inserted — or `nil` when no sequence by that name is active. Each entry is the same fresh table of public scalars `GetSequenceSteps` returns, so nothing here aliases engine state or carries a taint risk:
 

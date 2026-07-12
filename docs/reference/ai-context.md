@@ -18,7 +18,7 @@ The [AI-assisted plugin guide](../guides/ai-assisted.md) has example prompts and
 
 EMS (GRIP - Enhanced Macro Sequencer) is a World of Warcraft Retail addon. A plugin is its own addon that extends EMS through one frozen table, `GRIPEMS.API` (global alias `_G.GRIPEMS_API`). You never edit EMS and never reach into `_G.GRIPEMS`. Everything a plugin contributes through its handle is reverted the moment the user disables it, so the addon returns to stock.
 
-API_VERSION: 3. Documented against GRIP-EMS 2.3.4 on WoW Retail 12.0.7.
+API_VERSION: 3. Documented against GRIP-EMS 2.3.7 on WoW Retail 12.0.7.
 
 ### Hard rules (follow every one)
 
@@ -65,7 +65,7 @@ end)
 ### Tier 0 - discovery
 
 - `GRIPEMS.API.API_VERSION` -> integer (3)
-- `GRIPEMS.API.EMS_VERSION` -> string ("2.3.4"); for logs only, don't gate features on it
+- `GRIPEMS.API.EMS_VERSION` -> string ("2.3.7"); for logs only, don't gate features on it
 - `GRIPEMS.API:RequireVersion(n)` -> true, or false + reason
 - `GRIPEMS.API:GetCapabilities()` -> array of capability id strings
 - `GRIPEMS.API:RegisterPlugin(id, meta)` -> handle, or nil + reason
@@ -110,7 +110,7 @@ Capability ids: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `co
 - `GRIPEMS.API:GetSequenceList()` -> array of `{ name, stepCount, currentStep, stepFunction }`
 - `GRIPEMS.API:GetSequenceInfo(name)` -> table or nil. Fields: `name, stepFunction, versionCount, defaultVersion, activeVersionIndex, activeStepCount, contextVersionCount, classID, specID, author, description, help, helplink, changelog, talentString, url, privacyMode, version, createdAt, updatedAt, disabled, keybind, variableDeps`
 - `GRIPEMS.API:GetSequenceSteps(name)` -> array of `{ index, spellID, spellName, icon }` for the active version, or nil. Public scalars (never secret); the per-step view for action-bar chrome. Pair with `SEQUENCE_STEP_ADVANCED`. Capability `stepdata`.
-- `GRIPEMS.API:GetAuthoredSteps(name)` -> array of `{ index, spellID, spellName, icon }` in AUTHORED base order (the order the user wrote), or nil. Interleave copies suppressed and the version repeatCount not applied; Loops unrolled and IF branches flattened, so it is the base order, not the tree. Distinct from GetSequenceSteps' EXECUTION domain -- its indices do NOT map to currentStep or the SEQUENCE_STEP_ADVANCED step index. Capability `stepdata`.
+- `GRIPEMS.API:GetAuthoredSteps(name)` -> array of `{ index, spellID, spellName, icon }` in AUTHORED base order (the order the user wrote), or nil. Interleave copies suppressed and the version repeatCount not applied; Loops unrolled and IF branches flattened, so it is the base order, not the tree. Distinct from GetSequenceSteps' EXECUTION domain -- its indices do NOT map to currentStep or the SEQUENCE_STEP_ADVANCED step index. Capability `stepdata`. Added in EMS 2.3.7 with NO API_VERSION change, and `stepdata` predates it, so neither RequireVersion nor the capability list proves it is present -- guard every call with `if API.GetAuthoredSteps then ... end`, which is safe because a missing key reads as nil rather than raising.
 - `GRIPEMS.API:GetSequenceMacroIndex(name)` -> macro slot index or nil (read-only; never creates the macro). Capability `macro`.
 - `GRIPEMS.API:GetCurrentContext()` -> string ("none", "Raid", "Arena", ...)
 - `GRIPEMS.API:GetSetting(key)` -> value or nil. Allowlist: `uiLayout` (string|nil), `debug` (boolean). For any other setting, listen to `SETTING_CHANGED`.
