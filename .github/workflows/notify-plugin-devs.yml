@@ -1,0 +1,62 @@
+name: Notify plugin devs
+
+# Plugin authors asked to be pinged when the API moves, rather than finding out
+# when something breaks (#plugins forum, 2026-07-16). Every API change gets a
+# GitHub release; this posts that release into the "Grip EMS API" forum thread
+# and pings the GRIP Plugin Dev role.
+#
+# Manual fallback: workflow_dispatch with a tag re-announces an existing release
+# without cutting a new one.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to (re-)announce"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# Never let two announcements for the same tag race. Do not cancel in progress:
+# a half-sent announcement is worse than a duplicate.
+concurrency:
+  group: notify-plugin-devs-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Resolve the release
+        id: rel
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --json name,body,tagName,url > release.json
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Post to the plugin-dev thread
+        env:
+          # Webhook lives on the #plugins FORUM channel (1519829470653976677).
+          # A forum webhook must target a thread, so THREAD_ID is appended as
+          # ?thread_id= -- without it Discord rejects the post.
+          WEBHOOK_URL: ${{ secrets.DISCORD_PLUGIN_DEV_WEBHOOK }}
+          THREAD_ID: "1522604513649889361"
+          ROLE_ID: "1519784464983523452"
+          DOCS_URL: "https://jesperlive.github.io/GRIP-EMS-PluginAPI/reference/changelog/"
+        run: |
+          set -euo pipefail
+          if [ -z "${WEBHOOK_URL:-}" ]; then
+            echo "::error::DISCORD_PLUGIN_DEV_WEBHOOK is not set -- nothing posted."
+            exit 1
+          fi
+          python3 .github/scripts/notify_discord.py release.json

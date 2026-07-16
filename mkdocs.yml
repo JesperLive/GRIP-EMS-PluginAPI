@@ -73,6 +73,7 @@ nav:
       - Action-bar plugins: guides/action-bar-plugin.md
       - Building with an AI assistant: guides/ai-assisted.md
   - Reference:
+      - API changelog: reference/changelog.md
       - Event catalog: reference/event-catalog.md
       - The lock list: reference/lock-list.md
       - AI context pack: reference/ai-context.md
