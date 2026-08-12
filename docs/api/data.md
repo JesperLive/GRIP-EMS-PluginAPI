@@ -103,8 +103,9 @@ This is the per-step view an action-bar plugin draws chrome from. Pair it with t
 ## `API:GetAuthoredSteps(name)`
 
 ```lua
--- Presence check: GetAuthoredSteps arrived in EMS 2.3.7 and API_VERSION
--- did not change, so RequireVersion cannot tell you it is there.
+-- On EMS 2.4.0 and later, RequireVersion(4) gates this cleanly. Keep the
+-- presence check if you also support 2.3.7, where this method shipped
+-- while API_VERSION stayed at 3.
 if API.GetAuthoredSteps then
     local steps = API:GetAuthoredSteps("My Rotation")
     if steps then
@@ -115,14 +116,19 @@ if API.GetAuthoredSteps then
 end
 ```
 
-!!! warning "Added in EMS 2.3.7 -- check for it before you call it"
+!!! warning "Added in EMS 2.3.7 -- gate on `RequireVersion(4)`, or presence-check to reach 2.3.7"
 
-    `API_VERSION` is still `3`: this accessor is an additive change, and the contract
-    only bumps on a breaking one. The `stepdata` capability predates it too. That means
-    neither `RequireVersion(3)` nor the capability list can tell you whether this build
-    has `GetAuthoredSteps` -- both answer yes on EMS 2.3.6, where it is `nil`. Test for
-    the method itself: `if API.GetAuthoredSteps then ... end`. Reading a key the API does
-    not have returns `nil` rather than raising, so the check is safe on any build.
+    From EMS 2.4.0 this method is covered properly: `API_VERSION` is `4` and it has its
+    own `authoredsteps` capability id, so `RequireVersion(4)` is a clean gate.
+
+    EMS 2.3.7 itself is the hole, and it is in the wild. There `API_VERSION` is still `3`
+    -- the accessor was additive, and the contract at the time bumped only on a breaking
+    change -- and the `stepdata` capability predates the method. So neither
+    `RequireVersion(3)` nor the capability list can tell you whether a 2.3.x build has
+    `GetAuthoredSteps`: both answer yes on EMS 2.3.6, where it is `nil`. If you support
+    2.3.7, test for the method itself: `if API.GetAuthoredSteps then ... end`. Reading a
+    key the API does not have returns `nil` rather than raising, so the check is safe on
+    any build, including builds newer than 2.4.0.
 
 Returns the active version's steps in **authored base order** — the order the user actually wrote, before the step function expands the sequence and before interleave copies are inserted — or `nil` when no sequence by that name is active. Each entry is the same fresh table of public scalars `GetSequenceSteps` returns, so nothing here aliases engine state or carries a taint risk:
 
@@ -149,6 +155,26 @@ end
 Returns the macro slot index of the sequence's action-bar macro, or `nil` when no macro exists for it yet. Read-only — it never creates anything. To make sure a macro exists first, use the authoring-tier [`handle:EnsureSequenceMacro`](authoring.md#sequence-macros), then read or pick up the index.
 
 A sequence's macro is a standard WoW macro EMS maintains, so it's draggable and `PickupMacro`-able with no taint. It's also capped at 255 characters and runs in the default environment, so it's a simplified stand-in for the sequence — enough for many rotations, but it doesn't carry the full engine the keybind runs.
+
+## `API:GetActiveSequence()`
+
+```lua
+-- Added in EMS 2.4.0 (API_VERSION 4).
+local name = API:GetActiveSequence()
+if name then
+    local steps = API:GetSequenceSteps(name)
+end
+```
+
+Returns the name of the sequence EMS most recently drove, or `nil` when none has been driven this session. A read-only string — there is no setter, and nothing you do through the API changes it.
+
+Read the name literally: **most recently driven, not currently running.** Two things follow, and both bite a plugin that assumes otherwise.
+
+The name is never cleared when a sequence stops. There is no "nothing is running" value other than the `nil` you get before anything has ever run, so a non-nil return tells you what ran last, not that anything is running now. If you need live start/stop, that's the event bus — `SEQUENCE_STEP_ADVANCED` fires per step and is the only thing that tells you a sequence is actually advancing.
+
+The same value is written when hold mode activates, not only when the secure button is clicked. That is why this isn't called `GetClickedSequence`: a sequence the user put into hold mode becomes the active sequence without a click ever landing on it.
+
+It's the value EMS's own UI reads to decide which sequence a panel is talking about, exposed so a plugin doesn't have to mirror `SEQUENCE_STEP_ADVANCED` into its own variable just to answer "which one?".
 
 ## `API:GetCurrentContext()`
 

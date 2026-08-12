@@ -31,10 +31,10 @@ EMS resolves the active provider when it builds the window — the first time th
 In the EMS debug log, not a `lua error` popup. Develop with debug on. `GetSetting("debug")` tells you whether it's enabled.
 
 **How does versioning work? Should I check `EMS_VERSION`?**
-Gate on `API_VERSION` through `RequireVersion(n)`, not on `EMS_VERSION`. `API_VERSION` tracks the API contract and only bumps on a breaking change; `EMS_VERSION` is the addon release string, useful for logs and bug reports but not for feature gating.
+Gate on `API_VERSION` through `RequireVersion(n)`, not on `EMS_VERSION`. `API_VERSION` tracks the API contract and bumps on any addition to it; `EMS_VERSION` is the addon release string, useful for logs and bug reports but not for feature gating. One build predates that rule — EMS 2.3.7 added `GetAuthoredSteps` without a bump — so if you support 2.3.7, presence-check that one method.
 
 **Is the API stable?**
-Within an `API_VERSION`, yes — that's the contract. Adding methods doesn't bump the version; a breaking change does. Build against the public surface and EMS updates won't silently break you. Build against `_G.GRIPEMS` internals and they will.
+Within an `API_VERSION`, yes — that's the contract. Nothing already on the surface changes under you; a new `API_VERSION` is what tells you the surface grew. Build against the public surface and EMS updates won't silently break you. Build against `_G.GRIPEMS` internals and they will.
 
 **Can I use an AI assistant to write a plugin?**
 Yes, and there's a [guide](guides/ai-assisted.md) for it. Paste the [AI context pack](reference/ai-context.md) into the chat first so the assistant works from the real API, then check every call it writes against that page before you load the result. Anything not on that page is invented. Models are good at the shape of a plugin and bad at remembering method names, so the pack plus a read-through is what gets you correct code.

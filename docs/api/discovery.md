@@ -4,11 +4,11 @@ The handshake. Call these before anything else so your plugin fails clearly agai
 
 ## `API.API_VERSION`
 
-An integer, the contract version of the API surface. It goes up when the surface gains a level worth gating on — v2 added the plugin handle, reversibility, panel mounting, views, and the authoring tier; v3 added the action-bar surface: per-step spell data, the sequence's own action-bar macro, and plugin `/gems` subcommands. A v1 plugin keeps working unchanged on a v3 build; the bump is what lets a newer plugin detect the surface it needs. Compare against it through `RequireVersion` rather than reading it directly.
+An integer, the contract version of the API surface. It goes up when the surface gains something worth gating on — v2 added the plugin handle, reversibility, panel mounting, views, and the authoring tier; v3 added the action-bar surface: per-step spell data, the sequence's own action-bar macro, and plugin `/gems` subcommands; v4 adds `API:GetActiveSequence` and gives authored-step reads their own `authoredsteps` capability id. A v1 plugin keeps working unchanged on a v4 build; the bump is what lets a newer plugin detect the surface it needs. Compare against it through `RequireVersion` rather than reading it directly.
 
-Current value: `3`.
+Current value: `4`.
 
-It does not go up for every addition. A purely additive method can land without a bump: `API:GetAuthoredSteps` arrived in EMS 2.3.7 while `API_VERSION` stayed at `3`. So a version check proves a *tier* is present — it does not prove any particular method is. When you depend on a method that landed mid-version, test for the method itself:
+It goes up on any addition to this surface, not only on a breaking change. One method predates that rule: `API:GetAuthoredSteps` arrived in EMS 2.3.7 while `API_VERSION` stayed at `3`, so on that one build a version check answers yes for a method that may not be there. A version check proves a *tier* is present — for `GetAuthoredSteps` specifically, or any time you still support 2.3.7, test for the method itself:
 
 ```lua
 if API.GetAuthoredSteps then
@@ -20,7 +20,7 @@ Reading a key the API does not have returns `nil` rather than raising, so the ch
 
 ## `API.EMS_VERSION`
 
-A string, the running EMS version (for example `"2.3.7"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release, and presence-check any method that landed mid-version.
+A string, the running EMS version (for example `"2.4.0"`). Read once at load. Useful for logging and bug reports; don't gate features on it — gate on `API_VERSION`, which tracks the API, not the addon release, and presence-check any method that landed mid-version.
 
 ## `API:RequireVersion(n)`
 
@@ -39,7 +39,7 @@ end
 
 `n` must be a number. Anything else returns `false` with a reason.
 
-This only tells you the tier is there. A method added additively inside a version — see `API_VERSION` above — still needs its own presence check.
+From v4 on, this is a real gate: the version goes up on any addition, so `RequireVersion` covers the methods too. The one exception is `GetAuthoredSteps` on EMS 2.3.7 — see `API_VERSION` above — which still needs its own presence check.
 
 ## `API:GetCapabilities()`
 
@@ -80,13 +80,14 @@ The capability ids in this build:
 | `settings` | 5 | `RegisterSetting` / `OverrideSetting` |
 | `cvars` | 5 | `RequestCVarProfile` |
 | `authoring` | 5 | owned sequences, settings, and CVar profiles |
-| `stepdata` | 2 | `GetSequenceSteps` / `GetAuthoredSteps` |
+| `stepdata` | 2 | `GetSequenceSteps` |
 | `macro` | 2 / 5 | `GetSequenceMacroIndex` and `handle:EnsureSequenceMacro` |
 | `slash` | 5 | `handle:RegisterSlashCommand` |
+| `authoredsteps` | 2 | `GetAuthoredSteps` |
 
-An id can be older than everything it now covers. `stepdata` shipped with `GetSequenceSteps` and only later grew to cover `GetAuthoredSteps`, so the id answering yes does not prove every method in its row exists on that build. Capabilities gate the tier; presence-check the method.
+An id can be older than everything it covers. `stepdata` shipped with `GetSequenceSteps` and then silently grew to cover `GetAuthoredSteps` as well, which is what made it useless as a detector for the newer method. From v4 that is repaired: `GetAuthoredSteps` has its own `authoredsteps` id, so on a v4 build the id and the method agree. On EMS 2.3.7 neither `authoredsteps` nor a version bump is there to find, so the presence check above remains the only reliable test on that build. Capabilities gate the tier; presence-check the method.
 
-The order in the array follows the source: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `conditions`, `stepfunctions`, `plugins`, `authoring`, `panels`, `views`, `settings`, `cvars`, `stepdata`, `macro`, `slash`. Don't depend on the order — check for the id you want.
+The order in the array follows the source: `events`, `data`, `sequences`, `ui`, `preview`, `variables`, `conditions`, `stepfunctions`, `plugins`, `authoring`, `panels`, `views`, `settings`, `cvars`, `stepdata`, `macro`, `slash`, `authoredsteps`. Don't depend on the order — check for the id you want.
 
 ## `API:RegisterPlugin(id, meta)`
 

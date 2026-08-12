@@ -42,11 +42,11 @@ An AI assistant writes correct plugins when it has the API in front of it. Paste
 
 ## Versioning
 
-`GRIPEMS.API.API_VERSION` is an integer; it goes up when the surface gains a level worth gating on (v1 → v2 added the handle and the authoring tier; v3 added action-bar macros and slash subcommands). Call `GRIPEMS.API:RequireVersion(n)` in your init and bail out cleanly if it returns false.
+`GRIPEMS.API.API_VERSION` is an integer; it goes up on any addition to the surface (v1 → v2 added the handle and the authoring tier; v3 added action-bar macros and slash subcommands; v4 added `GetActiveSequence` and an `authoredsteps` capability id). Call `GRIPEMS.API:RequireVersion(n)` in your init and bail out cleanly if it returns false.
 
 ## Status
 
-API_VERSION 3. Documented against GRIP-EMS 2.3.4 on WoW Retail 12.0.7 (Midnight).
+API_VERSION 4. Documented against GRIP-EMS 2.4.0 on WoW Retail 12.0.7 (Midnight).
 
 ## License
 

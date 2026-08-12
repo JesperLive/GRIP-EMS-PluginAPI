@@ -4,13 +4,16 @@ What changed in the public plugin API, per EMS release. This is not the EMS chan
 
 Newest first. A release that isn't listed didn't change the API surface.
 
-!!! warning "`API_VERSION` won't tell you what's here"
+!!! warning "One release `API_VERSION` won't tell you about"
 
-    `API_VERSION` only bumps on a **breaking** change. Every entry below is
-    additive or a fix, so the contract has sat at `3` since EMS 2.3.0 — which
-    means `RequireVersion(3)` answers yes on 2.3.0 and on 2.3.9 alike, and the
-    capability list can't separate them either. Use `RequireVersion` to check
-    the tier, then **feature-detect the specific thing you need**:
+    From EMS 2.4.0, `API_VERSION` bumps on **any addition** to the surface, so
+    `RequireVersion` is a real gate again. One release predates that rule and is
+    still in the wild: EMS **2.3.7** added `GetAuthoredSteps` while the contract
+    stayed at `3`, on the older "breaking changes only" policy. So
+    `RequireVersion(3)` answers yes on 2.3.0 and on 2.3.9 alike, and the
+    capability list can't separate them either — `stepdata` predates the method.
+
+    If you support 2.3.7, **feature-detect the specific thing you need**:
 
     ```lua
     if API.GetAuthoredSteps then
@@ -20,6 +23,17 @@ Newest first. A release that isn't listed didn't change the API surface.
 
     Reading a key the API doesn't have returns `nil` rather than raising, so the
     check is safe on any build.
+
+## EMS 2.4.0
+
+### Added
+
+- **[`API:GetActiveSequence()`](../api/data.md#apigetactivesequence)** — the name of the sequence EMS most recently drove, or `nil` when none has been driven this session. A read-only string with no setter. It saves you mirroring `SEQUENCE_STEP_ADVANCED` into your own variable just to answer "which sequence?". Read the name literally: it is **most recently driven**, not currently running. The value is never cleared when a sequence stops, and hold-mode activation writes it just as a secure-button click does — so a non-nil result tells you what ran last, not that anything is running now. For live start/stop, stay on `SEQUENCE_STEP_ADVANCED`.
+- **`authoredsteps` capability id** — [`GetAuthoredSteps`](../api/data.md#apigetauthoredstepsname) now has an id of its own. It previously sat under `stepdata`, which predates it and therefore couldn't detect it.
+
+### Changed
+
+- **`API_VERSION` is now `4`, and the bump rule changed.** The contract used to say it bumped only on a breaking change; in practice v2 and v3 both bumped on purely additive growth, and 2.3.7's `GetAuthoredSteps` was the one addition that didn't. The rule now matches the practice: **any addition to the surface bumps `API_VERSION`.** Nothing about an existing call changed, so no plugin needs edits — this makes `RequireVersion(4)` a reliable gate for everything listed above, and leaves 2.3.7 as the single build where a presence check is still the only option.
 
 ## EMS 2.3.7 — 2026-07-11
 
