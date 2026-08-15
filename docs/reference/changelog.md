@@ -24,7 +24,7 @@ Newest first. A release that isn't listed didn't change the API surface.
     Reading a key the API doesn't have returns `nil` rather than raising, so the
     check is safe on any build.
 
-## EMS 2.4.0
+## EMS 2.4.0 — 2026-08-14
 
 ### Added
 
@@ -34,6 +34,12 @@ Newest first. A release that isn't listed didn't change the API surface.
 ### Changed
 
 - **`API_VERSION` is now `4`, and the bump rule changed.** The contract used to say it bumped only on a breaking change; in practice v2 and v3 both bumped on purely additive growth, and 2.3.7's `GetAuthoredSteps` was the one addition that didn't. The rule now matches the practice: **any addition to the surface bumps `API_VERSION`.** Nothing about an existing call changed, so no plugin needs edits — this makes `RequireVersion(4)` a reliable gate for everything listed above, and leaves 2.3.7 as the single build where a presence check is still the only option.
+
+## EMS 2.3.15 — 2026-07-29
+
+### Fixed
+
+- **[`API:GetSequenceInfo(name)`](../api/data.md#apigetsequenceinfoname)** stopped raising on a sequence whose stored `versions` field is not a table. The old code handed that value straight to `ipairs`, so the error surfaced inside your call instead of the function returning something you could check. A non-table now reads as an empty list: the call returns normally, with `versionCount` and `contextVersionCount` both `0` and `activeVersionIndex` left `nil`. A sequence with well formed data is unaffected, so this only ever changes a case that used to throw.
 
 ## EMS 2.3.7 — 2026-07-11
 

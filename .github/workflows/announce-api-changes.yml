@@ -1,0 +1,75 @@
+name: Announce API changes
+
+# Why this exists
+# ---------------
+# notify-plugin-devs.yml fires on `release: published`, and cutting that release
+# was a manual step documented nowhere. Between 2026-07-16 and 2026-08-15 the
+# plugin surface moved twice (2.3.15 GetSequenceInfo guard, 2.4.0 API_VERSION 4
+# plus GetActiveSequence) and neither reached the thread. A plugin dev noticed
+# before we did. The trigger is now the changelog itself, which already gets
+# written, rather than a separate step nobody knew to take.
+#
+# READ THIS BEFORE ADDING A TOKEN
+# -------------------------------
+# announce_pending.py posts to Discord DIRECTLY instead of leaning on the
+# release event. A release created with the default GITHUB_TOKEN does not start
+# another workflow run. That is documented GitHub behaviour, and it is exactly
+# how the announcement would silently go missing a second time.
+#
+# The same rule is what prevents a double post: the releases created here cannot
+# trigger notify-plugin-devs.yml. If you ever replace GH_TOKEN with a PAT, they
+# WILL trigger it and every announcement goes out twice.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/reference/changelog.md"
+  workflow_dispatch:
+    inputs:
+      floor:
+        description: "Lowest EMS version to consider (default 2.3.8)"
+        required: false
+        type: string
+      dry_run:
+        description: "Print the payloads without cutting releases or posting"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# Serialise. Two pushes in quick succession must not both decide the same tag is
+# missing and race to create it. Never cancel: a half-announced batch is worse
+# than a slow one.
+concurrency:
+  group: announce-api-changes
+  cancel-in-progress: false
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Cut releases for unannounced versions and post them
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # 2.3.8 is deliberate. The changelog is backfilled to 2.3.0 and
+          # everything through 2.3.7 was announced by hand on 2026-07-16.
+          # Without this floor the first run re-announces that history.
+          FLOOR: ${{ inputs.floor || '2.3.8' }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+          WEBHOOK_URL: ${{ secrets.DISCORD_PLUGIN_DEV_WEBHOOK }}
+          THREAD_ID: "1522604513649889361"
+          ROLE_ID: "1519784464983523452"
+          DOCS_URL: "https://jesperlive.github.io/GRIP-EMS-PluginAPI/reference/changelog/"
+        run: |
+          set -euo pipefail
+          if [ -z "${WEBHOOK_URL:-}" ] && [ -z "${DRY_RUN:-}" ]; then
+            echo "::error::DISCORD_PLUGIN_DEV_WEBHOOK is not set -- nothing posted."
+            exit 1
+          fi
+          python3 .github/scripts/announce_pending.py \
+            docs/reference/changelog.md --floor "$FLOOR"
