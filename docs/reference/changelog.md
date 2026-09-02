@@ -24,6 +24,12 @@ Newest first. A release that isn't listed didn't change the API surface.
     Reading a key the API doesn't have returns `nil` rather than raising, so the
     check is safe on any build.
 
+## EMS 2.4.11 — 2026-09-02
+
+### Fixed
+
+- **[`API:GetSequenceInfo(name)`](../api/data.md#apigetsequenceinfoname)** stopped raising on a sequence whose active version is not a table, and stopped reporting a step count for one whose `steps` field is not a table either. The old code read `stepFunction` off whatever the version resolved to, so a number or a boolean there threw inside your call. A string `steps` field failed more quietly: the length operator ran on the string, so a sequence holding `"abcd"` came back with an `activeStepCount` of `4`. Both keys are screened now. `activeVersion` is `nil` unless the stored version really is a table, and `activeStepCount` is `0` unless `steps` really is one. A sequence with well formed data is unaffected, so this only ever changes a case that used to throw or hand back a count nothing authored.
+
 ## EMS 2.4.0 — 2026-08-14
 
 ### Added
