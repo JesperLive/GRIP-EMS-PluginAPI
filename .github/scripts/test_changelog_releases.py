@@ -135,6 +135,29 @@ class RealChangelog(unittest.TestCase):
         EMS 2.3.15 and 2.4.0 both moved the plugin surface and neither reached
         the thread. If this ever returns a different set, the announcement scope
         has drifted and someone is about to be over- or under-notified.
+
+        THE WINDOW IS BOUNDED AT BOTH ENDS, and the ceiling is load-bearing
+        rather than tidiness. This reads the LIVE changelog on purpose -- that
+        is what the RealChangelog class is for, a parity check between the
+        parser and the document people actually edit -- but until 2026-09-05 it
+        paired that live read with a floor only, so EVERY release above 2.3.8
+        walked into a frozen two-item assertion. v2.4.11 shipped and the docs
+        deploy went red on 2026-09-02:
+
+            AssertionError: ['v2.3.15', 'v2.4.0', 'v2.4.11']
+                         != ['v2.3.15', 'v2.4.0']
+
+        That is not drift in the announcement scope, it is the ordinary act of
+        shipping, and the build fails before upload-pages-artifact so the public
+        docs simply stop deploying. A guard that reddens on normal operation
+        gets edited away rather than read.
+
+        The incident this test describes is a CLOSED historical window, so the
+        window it selects is closed too. Do NOT remove the ceiling to "pick up
+        new releases": the set is meant to be constant, and a new release
+        appearing in it is the bug, not the update. Note the ceiling needs no
+        maintenance on release -- 2.4.11 and 2.4.12 are excluded by comparison,
+        not by a list anybody has to remember to extend.
         """
         path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
@@ -148,7 +171,7 @@ class RealChangelog(unittest.TestCase):
             self.skipTest("changelog not present in this checkout")
         with open(path, encoding="utf-8") as fh:
             parsed = changelog_releases.parse_changelog(fh.read())
-        kept = [s for s in parsed if _floor(s["version"]) >= _floor("2.3.8")]
+        kept = [s for s in parsed if _floor("2.3.8") <= _floor(s["version"]) <= _floor("2.4.0")]
         self.assertEqual([s["tag"] for s in kept], ["v2.3.15", "v2.4.0"])
 
 

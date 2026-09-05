@@ -22,7 +22,13 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.x"
+          # PINNED 2026-09-05 from a MEASUREMENT, not a preference. "3.x" floats
+          # to whatever CPython the runner image ships newest; run 33745642706
+          # resolved it to 3.14.7 and `mkdocs build --strict` passed there, so
+          # "3.14" reproduces today's known-good interpreter exactly rather than
+          # guessing one. The float is the same class as forge's unpinned
+          # ruff-action: silent, green, and free to move under you between runs.
+          python-version: "3.14"
       - run: pip install -r requirements.txt
       - run: mkdocs build --strict
       # The Discord announcer's 2000-char truncation is only exercised on a

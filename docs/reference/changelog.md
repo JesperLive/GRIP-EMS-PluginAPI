@@ -24,6 +24,12 @@ Newest first. A release that isn't listed didn't change the API surface.
     Reading a key the API doesn't have returns `nil` rather than raising, so the
     check is safe on any build.
 
+## EMS 2.4.12 — 2026-09-03
+
+### Fixed
+
+- **[`API:GetSequenceInfo(name)`](../api/data.md#apigetsequenceinfoname)** reports `activeVersionIndex` again for a sequence that has a live version. 2.4.11 moved the type screen for the active version onto the engine's accessor, but this function kept hand-rolling its own position loop against the value it had screened locally. Once the two stopped agreeing, the field came back `nil` for exactly the sequence whose in-game badge was showing V2 live. The position now comes from the engine, which reads the unscreened element deliberately: an array position stays knowable even when the element at it is malformed. Nothing else in the returned table changed. A `nil` check you added around `activeVersionIndex` after 2.4.11 is still correct and still worth keeping — a version that genuinely does not resolve returns `nil` here, as it always has.
+
 ## EMS 2.4.11 — 2026-09-02
 
 ### Fixed
