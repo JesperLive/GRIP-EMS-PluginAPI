@@ -69,12 +69,14 @@ Returns a metadata snapshot for one sequence, or `nil` when no sequence by that 
 | `talentString` | string \| nil | the sequence's talent import code, if set |
 | `url` | string \| nil | the sequence's source URL, if set |
 | `privacyMode` | string \| nil | the privacy mode stamped on the sequence |
-| `version` | number \| nil | the sequence's stored version number |
+| `version` | string \| number \| nil | the sequence's stored version, normally the string `"1"` |
 | `createdAt` | number \| nil | creation timestamp |
 | `updatedAt` | number \| nil | last-modified timestamp |
 | `disabled` | boolean | whether the sequence is disabled |
 | `keybind` | string \| nil | the key bound to the sequence, or `nil` if unbound |
 | `variableDeps` | table | fresh sorted array of variable names the sequence depends on |
+
+From EMS v2.4.21 on, the sequence's own fields in this table, `defaultVersion`, `classID`, `specID`, `author`, `description`, `help`, `helplink`, `changelog`, `talentString`, `url`, `privacyMode`, `version`, `createdAt` and `updatedAt`, hold the types it documents, because EMS checks them when a sequence is imported, registered, edited in the Source tab or loaded.
 
 There's no separate "active version" accessor — `activeVersionIndex` already carries the index the current context resolves to. The richer fields (`author`, `description`, `keybind`, `variableDeps`, and the timestamps) are what a metadata or about panel reads; v1 returned only the first seven.
 
