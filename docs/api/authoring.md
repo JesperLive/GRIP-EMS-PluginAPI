@@ -16,7 +16,7 @@ local ok, reason = handle:CreateSequence("Acme Burst", {
 })
 ```
 
-Creates and activates a sequence owned by your plugin. `name` must be a non-empty string and `data` a table. It refuses to clobber a name that already exists and isn't yours — a user sequence or another plugin's. On success EMS deep-copies the data (so you can't mutate execution after the fact), stamps the owner, and activates it. The activation fires `SEQUENCE_CREATED`, so this method doesn't fire it again.
+Creates and activates a sequence owned by your plugin. `name` must be a non-empty string and `data` a table. It refuses to clobber a name that already exists and isn't yours — a user sequence or another plugin's. It also refuses a name whose action button would be the same as another sequence's, for example Acme Burst v2 while Acme Burst has a modifier variant, or one EMS uses for its own frames. On success EMS deep-copies the data (so you can't mutate execution after the fact), stamps the owner, and activates it. The activation fires `SEQUENCE_CREATED`, so this method doesn't fire it again.
 
 Calling `CreateSequence` again with a name you already own re-applies the data — a safe upsert, not a duplicate.
 
