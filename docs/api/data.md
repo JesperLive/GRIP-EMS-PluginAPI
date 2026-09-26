@@ -154,7 +154,7 @@ if index then
 end
 ```
 
-Returns the macro slot index of the sequence's action-bar macro, or `nil` when no macro exists for it yet. Read-only — it never creates anything. To make sure a macro exists first, use the authoring-tier [`handle:EnsureSequenceMacro`](authoring.md#sequence-macros), then read or pick up the index.
+Returns the slot index of the sequence's action-bar macro, or `nil` when EMS has no macro for it. EMS finds the macro in the macro list by its body when you call this, so the index is right at that moment: deleting any character macro moves every macro after it down one slot. Read it again right before each `PickupMacro` rather than keeping it. Once the player deletes the macro by hand, this returns `nil`. It is read-only and never creates anything. To make sure a macro exists first, use the authoring-tier [`handle:EnsureSequenceMacro`](authoring.md#sequence-macros), which makes a new one when the player deleted it, then read or pick up the index.
 
 A sequence's macro is a standard WoW macro EMS maintains, so it's draggable and `PickupMacro`-able with no taint. It's also capped at 255 characters and runs in the default environment, so it's a simplified stand-in for the sequence — enough for many rotations, but it doesn't carry the full engine the keybind runs.
 

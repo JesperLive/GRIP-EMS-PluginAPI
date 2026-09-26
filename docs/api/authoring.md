@@ -121,7 +121,7 @@ if index then
 end
 ```
 
-Creates the sequence's action-bar macro if it doesn't exist yet and returns its slot index. The sequence must be active. If EMS or the user already made a macro for it, you get that existing index back and EMS does *not* journal it — disable never deletes a macro you didn't cause. A macro your call created *is* journaled, so disabling your plugin deletes it. You get `false` plus a reason in combat, when the macro slot pool is full, or for an unknown sequence.
+Creates the sequence's action-bar macro if it doesn't exist yet and returns its slot index. The sequence must be active. If EMS or the user already made a macro for it, you get that existing index back and EMS does *not* journal it — disable never deletes a macro you didn't cause. A macro your call created *is* journaled, so disabling your plugin deletes it. If the player deleted the sequence's macro by hand, the call makes a new one and journals it like any other it makes. The index is found by the macro's body when the call returns, and deleting any character macro moves the macros after it down one slot, so call again right before each `PickupMacro`. You get `false` plus a reason in combat, when the macro slot pool is full, or for an unknown sequence.
 
 The macro is the supported way to put a sequence on a third-party bar button. It's capped at 255 characters and runs in the default environment, so it's a simplified version of the sequence, not the full engine — the [action-bar plugin guide](../guides/action-bar-plugin.md#the-honest-limit) covers that trade-off.
 
