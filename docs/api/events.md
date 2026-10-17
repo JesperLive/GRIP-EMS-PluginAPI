@@ -43,9 +43,11 @@ Returns a fresh array of the event names you may subscribe to — the same set d
 
 Subscribe from an init point (see [Getting started](../getting-started.md)), not at file scope. For UI events (`GEMS_*`), subscribe after `GEMS_UI_READY` fires, since the window and its host frames don't exist until the user first opens EMS.
 
+Subscribing from `PLAYER_LOGIN` doesn't cost you the player's sequences. EMS restores them at the first `PLAYER_ENTERING_WORLD`, which comes after `PLAYER_LOGIN`, and fires `SEQUENCE_CREATED` for each one then.
+
 ## Core change signals
 
-EMS exposes the signals a plugin most often wants to watch: `SEQUENCE_UPDATED` when a sequence is saved, `KEYBIND_CHANGED` when a binding changes, `CONTEXT_CHANGED` when the content context shifts, and `LOADOUT_CHANGED` on a talent-loadout change. All four fire from the engine on a real change; v2 adds them to the public catalog. Their payloads are in the [catalog](../reference/event-catalog.md) — note `KEYBIND_CHANGED` can arrive with `nil` arguments on a bulk or clear change, so guard for that in your handler.
+EMS exposes the signals a plugin most often wants to watch: `SEQUENCE_UPDATED` when a sequence changes, `KEYBIND_CHANGED` when a binding changes, `CONTEXT_CHANGED` when the content context shifts, and `LOADOUT_CHANGED` on a talent-loadout change. All four fire from the engine on a real change; v2 adds them to the public catalog. `SEQUENCE_UPDATED` fires for a save, a version pin set or cleared, a disable, a variable rename that rewrites the sequence, and Auto-refresh macro-reference steps updating one of its steps. Enabling a sequence again fires `SEQUENCE_CREATED` instead. Their payloads are in the [catalog](../reference/event-catalog.md) — note `KEYBIND_CHANGED` can arrive with `nil` arguments on a bulk or clear change, so guard for that in your handler.
 
 ## The UI nav events
 

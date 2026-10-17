@@ -62,7 +62,14 @@ def build_content(name, body, url, role_id, docs_url):
 
     if len(body) > room:
         ellipsis = "\n... (truncated)"
-        body = body[: max(0, room - len(ellipsis))].rstrip() + ellipsis
+        cut = body[: max(0, room - len(ellipsis))]
+        # End on the last whole line that fits. The EMS 2.4.21 post stopped in
+        # the middle of a word ("remake") when this cut at a character count. A
+        # body with no line break inside the cut keeps the character cut.
+        line_end = cut.rfind("\n")
+        if line_end > 0:
+            cut = cut[:line_end]
+        body = cut.rstrip() + ellipsis
 
     if not body:
         return "%s\n\n%s" % (header, footer)

@@ -16,9 +16,9 @@ local ok, reason = handle:CreateSequence("Acme Burst", {
 })
 ```
 
-Creates and activates a sequence owned by your plugin. `name` must be a non-empty string and `data` a table. It refuses to clobber a name that already exists and isn't yours — a user sequence or another plugin's. It also refuses a name whose action button would be the same as another sequence's, for example Acme Burst v2 while Acme Burst has a modifier variant, or one EMS uses for its own frames. On success EMS deep-copies the data (so you can't mutate execution after the fact), stamps the owner, and activates it. The activation fires `SEQUENCE_CREATED`, so this method doesn't fire it again.
+Creates and activates a sequence owned by your plugin. `name` must be a non-empty string and `data` a table. It refuses to clobber a name that already exists and isn't yours — a user sequence or another plugin's. It also refuses a name whose action button would be the same as another sequence's, for example Acme Burst v2 while Acme Burst exists, since a modifier variant of Acme Burst would use that button, or one EMS uses for its own frames. On success EMS deep-copies the data (so you can't mutate execution after the fact), stamps the owner, and activates it. The activation fires `SEQUENCE_CREATED`, so this method doesn't fire it again.
 
-Calling `CreateSequence` again with a name you already own re-applies the data — a safe upsert, not a duplicate.
+Calling `CreateSequence` again with a name you already own re-applies the data — a safe upsert, not a duplicate. EMS rebuilds the sequence to apply it, so subscribers hear `SEQUENCE_DELETED` and then `SEQUENCE_CREATED` for the name.
 
 ### `handle:UpdateSequence(name, data)`
 
@@ -26,7 +26,7 @@ Calling `CreateSequence` again with a name you already own re-applies the data �
 local ok, reason = handle:UpdateSequence("Acme Burst", newData)
 ```
 
-Replaces the data of a sequence you own. The sequence must already exist and carry your owner stamp; an unknown name, a user sequence, or another plugin's is rejected. Fires `SEQUENCE_UPDATED` through the engine.
+Replaces the data of a sequence you own. The sequence must already exist and carry your owner stamp; an unknown name, a user sequence, or another plugin's is rejected. Fires `SEQUENCE_UPDATED` through the engine, after `SEQUENCE_DELETED` and `SEQUENCE_CREATED` when the change makes EMS rebuild the sequence.
 
 ### `handle:DeleteSequence(name)`
 
@@ -121,7 +121,7 @@ if index then
 end
 ```
 
-Creates the sequence's action-bar macro if it doesn't exist yet and returns its slot index. The sequence must be active. If EMS or the user already made a macro for it, you get that existing index back and EMS does *not* journal it — disable never deletes a macro you didn't cause. A macro your call created *is* journaled, so disabling your plugin deletes it. If the player deleted the sequence's macro by hand, the call makes a new one and journals it like any other it makes. The index is found by the macro's body when the call returns, and deleting any character macro moves the macros after it down one slot, so call again right before each `PickupMacro`. You get `false` plus a reason in combat, when the macro slot pool is full, or for an unknown sequence.
+Creates the sequence's action-bar macro if it doesn't exist yet and returns its slot index. The sequence must be active. If EMS or the user already made a macro for it, you get that existing index back and EMS does *not* journal it — disable never deletes a macro you didn't cause. A macro your call created *is* journaled, so disabling your plugin deletes it. If the player deleted the sequence's macro by hand, the call makes a new one and journals it like any other it makes. The index is found by the macro's body when the call returns, and deleting any character macro moves the macros after it down one slot, so call again right before each `PickupMacro`. You get `false` plus a reason in combat, when the macro slot pool is full, for an unknown sequence, or for a sequence with no button, because another sequence or frame uses its button name.
 
 The macro is the supported way to put a sequence on a third-party bar button. It's capped at 255 characters and runs in the default environment, so it's a simplified version of the sequence, not the full engine — the [action-bar plugin guide](../guides/action-bar-plugin.md#the-honest-limit) covers that trade-off.
 

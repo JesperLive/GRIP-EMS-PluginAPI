@@ -55,7 +55,7 @@ end)
 
 ## 4. A plugin that does something
 
-Listen for a sequence being created and read back its details:
+Listen for EMS registering a sequence and read back its details. It fires for each of the player's sequences after login as well as for a new one, and the [event catalog](reference/event-catalog.md#when-sequence-events-fire) lists the rest:
 
 ```lua
 function MyPlugin_Init(API)

@@ -24,6 +24,23 @@ Newest first. A release that isn't listed didn't change the API surface.
     Reading a key the API doesn't have returns `nil` rather than raising, so the
     check is safe on any build.
 
+## EMS 2.4.21 - 2026-10-17
+
+### Changed
+
+- **[`handle:CreateSequence(name, data)`](../api/authoring.md#owned-sequences)** refuses a name whose action buttons would overlap another sequence's, and a name EMS keeps for its own frames. A modifier variant's button adds `_v` and a number, so `Acme Burst v2` is refused while `Acme Burst` exists, and `Acme Burst!` clashes with `Acme Burst`. A name you already own isn't checked again.
+- **[`handle:EnsureSequenceMacro(name)`](../api/authoring.md#sequence-macros)** answers `false` and a reason for a sequence with no button because another sequence or frame uses its button name.
+- **`SEQUENCE_UPDATED`** also fires when a variable rename rewrites a sequence, and when Auto-refresh macro-reference steps updates a step.
+- **[`API:GetSequenceInfo(name)`](../api/data.md#apigetsequenceinfoname)** hands back the sequence's own fields in the types the data reference lists, because EMS now checks them when a sequence is imported, registered, edited or loaded. `version` is a string, a number or `nil`, normally the string `"1"`.
+- **The [event catalog](../reference/event-catalog.md#when-sequence-events-fire)** now says when each sequence event fires. A rebuild fires `SEQUENCE_DELETED`, then `SEQUENCE_CREATED`, for a sequence that still exists.
+
+### Fixed
+
+- **`handle:CreateSequence`** refuses a name whose saved sequence isn't yours before EMS restores the saved sequences at the first `PLAYER_ENTERING_WORLD`. Called from `PLAYER_LOGIN`, it used to replace the player's saved sequence with yours.
+- **`handle:EnsureSequenceMacro(name)`** remakes the macro the player deleted by hand, where it used to answer `false` with `macro creation failed`.
+- **[`API:GetSequenceMacroIndex(name)`](../api/data.md#apigetsequencemacroindexname)** and `EnsureSequenceMacro` find the macro by its body, so deleting another macro can't leave them on the wrong slot.
+- **`API:GetSequenceInfo(name)`** lists a variable used only in a modifier variant, Key Press or Key Release in `variableDeps`. Its `createdAt` is a number for a sequence your plugin made, stamped when you send none.
+
 ## EMS 2.4.12 — 2026-09-03
 
 ### Fixed

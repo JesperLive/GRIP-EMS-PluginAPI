@@ -60,11 +60,11 @@ This lets the plugin degrade on an older EMS that doesn't have a tier, instead o
 
 ```lua
 API:On("SEQUENCE_CREATED", function(name)
-    print("saw a new sequence: " .. tostring(name))
+    print("EMS registered " .. tostring(name))
 end)
 ```
 
-`SEQUENCE_CREATED` hands your handler `(name, data)` — the name first. `On` returns a handle you can keep and pass to `Off` later if you ever need to unsubscribe. The full list of events is the [event catalog](../reference/event-catalog.md).
+`SEQUENCE_CREATED` hands your handler `(name, data)` — the name first. It fires for each of the player's sequences after login and again whenever EMS rebuilds one, so read it as EMS registering the name. `On` returns a handle you can keep and pass to `Off` later if you ever need to unsubscribe. The full list of events is the [event catalog](../reference/event-catalog.md).
 
 ## Add a variable
 

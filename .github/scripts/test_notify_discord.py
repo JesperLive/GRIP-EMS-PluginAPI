@@ -52,6 +52,23 @@ class BuildContent(unittest.TestCase):
         for n in range(1900, 2101):
             self.assertLessEqual(len(content("A" * n)), CONTENT_LIMIT, "body of %d overflowed" % n)
 
+    def test_long_body_is_cut_at_a_line_end(self):
+        # A changelog body is lines. Cut at a character count, the EMS 2.4.21
+        # post stopped inside a word; every line kept must be a whole one.
+        lines = ["- bullet %02d %s" % (i, "word " * 30) for i in range(20)]
+        c = content("\n".join(lines))
+        self.assertLessEqual(len(c), CONTENT_LIMIT)
+        body = c.split("\n\n")[1].split("\n")
+        self.assertEqual(body[-1], "... (truncated)")
+        self.assertGreater(len(body), 1)
+        for kept in body[:-1]:
+            self.assertIn(kept.rstrip(), [l.rstrip() for l in lines])
+
+    def test_unbroken_body_still_cuts_at_the_limit(self):
+        # No line break to end on: the character cut stays, and fills the room.
+        c = content("A" * 5000)
+        self.assertEqual(len(c), CONTENT_LIMIT)
+
     def test_empty_body_still_announces(self):
         c = content("")
         self.assertIn(DOCS, c)
